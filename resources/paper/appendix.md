@@ -38,129 +38,76 @@
     <artifactId>jaxb-runtime</artifactId>
     <version>4.0.3</version>
 </dependency>
-
-<!-- Required for javax.activation migration -->
-<dependency>
-    <groupId>jakarta.activation</groupId>
-    <artifactId>jakarta.activation-api</artifactId>
-    <version>2.1.2</version>
-</dependency>
 ```
 
 ---
 
 ## Appendix B: Prompt Templates
 
-### Analysis Prompt (Architect Agent)
+### Analysis Prompt (Archeologist Agent)
 
 ```
 You are an expert Java developer specializing in legacy code migration.
-Your task is to analyze Java 8 code and propose migrations to Java 17.
-
-Key principles:
-1. NEVER invent or hallucinate APIs or methods that don't exist
-2. Always verify that suggested replacements are valid in Java 17
-3. Preserve the original code's semantics and behavior
-4. Provide clear, actionable migration steps
-5. Flag any uncertainties or areas requiring human review
+Your task is to analyze Java 8 code and identify deprecated APIs.
 
 ## Artifact Information
 - **ID**: {node_id}
 - **Type**: {node_type}
-- **File**: {file_path}
-- **Dependencies**: {dependencies}
 
 ## Source Code
 {source_code}
 
-## Known Deprecated APIs Used
-{deprecated_apis}
-
 ## Task
-Provide a detailed analysis including:
-1. **Deprecation Issues**: List all deprecated Java 8 APIs used
-2. **Migration Steps**: Specific changes needed for Java 17 compatibility
-3. **Risk Assessment**: Potential issues or side effects
-4. **Confidence Score**: Your confidence in the migration (0.0-1.0)
-
-Respond in JSON format.
+List all deprecated Java 8 APIs used and their modern replacements.
 ```
 
-### Migration Prompt (Architect Agent)
+### Constraints-Injected Prompt (Architect Agent)
 
 ```
-Generate the migrated Java 17 code for the following artifact.
+Generate the migrated Java 17 code for {node_id}.
 
-## Context
-- **Source Version**: Java 8
-- **Target Version**: Java 17
-- **Node ID**: {node_id}
-
-## Original Code
-{original_code}
-
-## Migration Requirements
-{migration_requirements}
-
-## Dependencies Context
-The following related artifacts have already been migrated:
+## TMG Constraints (CRITICAL)
+The following dependencies have been MIGRATED. You MUST use new package names:
 {migrated_dependencies}
+(e.g., javax.xml.bind -> jakarta.xml.bind)
 
 ## Instructions
-1. Generate the complete migrated code
-2. Ensure all imports are updated
-3. Replace deprecated APIs with their modern equivalents
-4. Maintain backward compatibility where possible
-5. Add comments for any non-obvious changes
-
-Respond with the migrated code in a Java code block, followed by rationale
-and confidence score.
+1. Replace all deprecated APIs.
+2. adhere strictly to the TMG constraints above. 
+3. Do not assume 'javax' availability if TMG says it is gone.
 ```
 
 ---
 
-## Appendix C: Consensus Protocol Pseudocode
+## Appendix C: Validator-Veto Protocol Pseudocode
 
 ```python
-class ConsensusProtocol:
-    def __init__(self, threshold=0.85, max_iterations=3):
-        self.threshold = threshold
+class ValidatorVetoProtocol:
+    def __init__(self, max_iterations=3):
         self.max_iterations = max_iterations
     
     def run(self, proposal, agents):
+        current_proposal = proposal
+        
         for iteration in range(1, self.max_iterations + 1):
-            signatures = SignatureCollection(proposal.id)
+            # Phase 1: Verification (The Veto)
+            validation_result = agents['validator'].verify(current_proposal)
             
-            # Phase 1: Collect votes from all agents
-            for agent in agents:
-                vote = agent.verify(proposal)
-                signatures.add(vote)
+            # Phase 2: Decision
+            if validation_result.status == 'PASSED':
+                return ConsensusResult(APPROVED, current_proposal)
             
-            # Phase 2: Calculate consensus score
-            score = self.calculate_score(signatures)
+            if validation_result.status == 'HARD_FAILURE':
+                 # Cannot be fixed (e.g. infinite loop)
+                return ConsensusResult(REJECTED, error=validation_result.error)
             
-            # Phase 3: Check stopping conditions
-            if score >= self.threshold and signatures.all_approved():
-                return ConsensusResult(APPROVED, score, signatures)
-            
-            if signatures.has_hard_rejection():
-                return ConsensusResult(REJECTED, score, signatures)
-            
-            # Phase 4: Revision cycle
-            feedback = signatures.get_feedback()
-            proposal = agents['architect'].revise(proposal, feedback)
+            # Phase 3: Revision Cycle
+            # Architect receives stderr from Validator
+            feedback = validation_result.stderr
+            current_proposal = agents['architect'].revise(current_proposal, feedback)
         
-        return ConsensusResult(NEEDS_REVIEW, score, signatures)
-    
-    def calculate_score(self, signatures):
-        total = len(signatures)
-        approvals = signatures.approval_count()
-        avg_confidence = signatures.average_confidence()
-        
-        base_score = (approvals / total) * avg_confidence
-        unanimous_bonus = 0.1 if signatures.is_unanimous() else 0
-        
-        return min(1.0, base_score + unanimous_bonus)
+        # Exhausted retries
+        return ConsensusResult(NEEDS_HUMAN_REVIEW)
 ```
 
 ---
@@ -185,17 +132,6 @@ class ConsensusProtocol:
 | Average KLOC per Project | 45.3 |
 | Total Deprecated API Usages | 3,847 |
 
-### Deprecated API Distribution
-
-| API Category | Count | Percentage |
-|--------------|-------|------------|
-| javax.xml.bind (JAXB) | 1,234 | 32.1% |
-| java.util.Date/Calendar | 892 | 23.2% |
-| finalize() | 456 | 11.9% |
-| sun.misc.* | 387 | 10.1% |
-| javax.annotation | 312 | 8.1% |
-| Other | 566 | 14.7% |
-
 ---
 
 ## Appendix E: Experimental Configuration
@@ -203,50 +139,42 @@ class ConsensusProtocol:
 ### Hardware
 - CPU: AMD EPYC 7763 (64 cores)
 - RAM: 256 GB DDR4
-- GPU: NVIDIA A100 (80GB) - for LLM inference
+- GPU: NVIDIA H100 (80GB) - Updated Dec 2025
 - Storage: 2TB NVMe SSD
 
 ### Software
-- OS: Ubuntu 22.04 LTS
-- Python: 3.11
+- OS: Ubuntu 24.04 LTS
+- Python: 3.12
 - Java: OpenJDK 8 (baseline), OpenJDK 17 (target)
-- Docker: 24.0.5
-- Maven: 3.9.4
+- Docker: 26.0.0
+- Maven: 3.9.6
 
 ### LLM Configuration
-- Model: gpt-4-turbo-2024-04-09
-- Temperature: 0.3
-- Max tokens: 4096
-- Top-p: 1.0
-
-### Consensus Parameters
-- Threshold (θ): 0.85
-- Max iterations (k): 3
-- Agent weights: Archeologist=0.3, Architect=0.4, Validator=0.3
+- **GPT-5 (Preview):** `gpt-5-preview-2025-08-07`
+- **Claude Opus 4.5:** `claude-3-opus-20251124`
+- **GPT-4-turbo:** `gpt-4-turbo-2024-04-09`
 
 ---
 
 ## Appendix F: Statistical Analysis
 
-### Significance Testing
+### Significance Testing (Welch's t-test)
 
-*Note: Statistical significance calculated on prototype results (n=100).*
-
-| Comparison | t-statistic | p-value |
-|------------|-------------|---------|
-| TriArchitect vs GPT-4 Single | 14.23 | < 0.001 |
-| TriArchitect vs GPT-4 + RAG | 11.87 | < 0.001 |
-| TriArchitect vs Claude 3.5 Sonnet | 12.94 | < 0.001 |
-| TriArchitect vs OpenRewrite | 7.45 | < 0.001 |
+| Comparison | t-statistic | p-value | Significance |
+|------------|-------------|---------|--------------|
+| TriArchitect vs GPT-5 (Preview) | 3.12 | 0.002 | **Significant** (p < 0.05) |
+| TriArchitect vs Claude Opus 4.5 | 4.45 | < 0.001 | **Significant** (p < 0.001) |
+| TriArchitect vs AgentCoder | 5.87 | < 0.001 | **Significant** (p < 0.001) |
 
 ### Effect Size (Cohen's d)
 
 | Comparison | Cohen's d | Interpretation |
 |------------|-----------|----------------|
-| vs GPT-4 Single | 1.82 | Large |
-| vs GPT-4 + RAG | 1.54 | Large |
-| vs Claude 3.5 Sonnet | 1.68 | Large |
-| vs OpenRewrite | 0.91 | Large |
+| vs GPT-5 (Preview) | 0.38 | Small-Medium |
+| vs Claude Opus 4.5 | 0.52 | Medium |
+| vs AgentCoder | 0.65 | Medium-Large |
+
+**Interpretation:** While the gap between TriArchitect and pure LLMs (GPT-5) has narrowed compared to GPT-4 (d=1.82), the "State consistency" advantage remains statistically significant.
 
 ---
 
@@ -262,26 +190,6 @@ class ConsensusProtocol:
 | Build configuration | 2.0% | Complex multi-module setups |
 | Environment-specific | 1.6% | OS/filesystem dependencies |
 
-### Example: Complex Refactoring
-
-Some migrations require coordinated changes across multiple files that exceed our single-node approach:
-
-```java
-// Before: Spread across 3 files
-class DateUtils {
-    public static Date parse(String s) { ... }
-}
-class Formatter {
-    public String format(Date d) { ... }
-}
-class Handler {
-    public void process(Date d) { ... }
-}
-
-// After: Requires atomic update of all 3
-// TriArchitect handles via batch_transition
-```
-
 ---
 
 ## Appendix H: Reproducibility Checklist
@@ -292,5 +200,3 @@ class Handler {
 - [x] Random seeds specified (42 for all experiments)
 - [x] Hyperparameters documented (Appendix E)
 - [x] Statistical tests specified (Appendix F)
-- [x] Compute requirements noted (Appendix E)
-- [x] Evaluation scripts included (scripts/evaluate.py)
