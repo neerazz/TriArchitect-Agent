@@ -1,5 +1,5 @@
 """
-Evaluation Metrics for MigrationBench.
+Evaluation Metrics for J8-to-J17-Bench.
 
 Implements the three core metrics:
 1. Pass@1: Does migrated code compile and pass tests?

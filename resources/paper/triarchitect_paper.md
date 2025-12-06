@@ -12,7 +12,7 @@ Large Language Models (LLMs) have demonstrated remarkable capabilities in code g
 2. **Cyclic Consensus Protocol**: Three specialized agents—Archeologist, Architect, and Validator—must reach verified agreement before any transformation is applied
 3. **Topological Migration Ordering**: Respects dependency relationships to ensure correctness
 
-We evaluate TriArchitect on **MigrationBench**, a benchmark of 1,000 real-world Java 8 to Java 17 migration tasks. Our approach achieves:
+We evaluate TriArchitect on **J8-to-J17-Bench**, a benchmark of 1,000 real-world Java 8 to Java 17 migration tasks. Our approach achieves:
 
 - **94.2%** semantic preservation (vs. 67.1% baseline)
 - **87.3%** test passage rate (vs. 52.8% baseline)
@@ -187,7 +187,7 @@ Where:
 
 ## 5. Evaluation
 
-### MigrationBench Dataset
+### J8-to-J17-Bench Dataset
 
 - **1,000** migration tasks
 - **50** open-source projects

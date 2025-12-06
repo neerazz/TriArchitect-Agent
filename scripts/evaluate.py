@@ -284,7 +284,7 @@ def run_baseline_comparison(
     }
     
     results = {}
-    num_tasks = 1000  # MigrationBench size
+    num_tasks = 1000  # J8-to-J17-Bench size
     
     for name, rates in baselines.items():
         metrics = EvaluationMetrics(

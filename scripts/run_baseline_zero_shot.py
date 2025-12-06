@@ -1,5 +1,5 @@
 """
-Zero-Shot LLM Baseline for MigrationBench Evaluation.
+Zero-Shot LLM Baseline for J8-to-J17-Bench Evaluation.
 
 This baseline represents the simplest approach: directly prompting
 an LLM to migrate Java 8 code to Java 17 in a single pass.

@@ -1,5 +1,5 @@
 """
-Sequential Agent Baseline for MigrationBench Evaluation.
+Sequential Agent Baseline for J8-to-J17-Bench Evaluation.
 
 This baseline uses multiple LLM calls in sequence (Reader → Planner → Executor)
 but WITHOUT shared state (TMG). This demonstrates the value of the TMG.

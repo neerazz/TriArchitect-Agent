@@ -12,10 +12,10 @@
     * Define the "Defense": How TMG prevents this.
 
 ## Phase 2: The "Clean Room" Experiment (Weeks 3-8)
-**Objective:** Generate irrefutable data using `MigrationBench`.
+**Objective:** Generate irrefutable data using `J8-to-J17-Bench`.
 * **Action 2.1: Infrastructure Setup.**
     * Rent a cloud GPU instance (AWS p3.2xlarge or similar). Do *not* use corporate laptops.
-    * Clone `MigrationBench` (Java 8 $\rightarrow$ 17 subset).
+    * Clone `J8-to-J17-Bench` (Java 8 $\rightarrow$ 17 subset).
 * **Action 2.2: Run Baselines (The "Control Group").**
     * **Baseline A (Zero-Shot):** GPT-4o / Claude 3.5 Sonnet direct prompt.
     * **Baseline B (Chain-of-Thought):** Standard sequential agents (Reader $\rightarrow$ Coder).
@@ -53,7 +53,7 @@ Use this structure to draft the content. This strictly follows the USENIX/ACM te
 * **The Solution:** TriArchitect.
     1.  **Typed Migration Graph (TMG):** A persistent state machine for code artifacts.
     2.  **Cyclic Consensus Protocol:** A 3-agent verification loop.
-* **The Result:** Evaluated on `MigrationBench` (300 repositories). Achieved **64% Pass@1** (4.6x baseline improvement) and reduced dependency hallucination to **<2%**.
+* **The Result:** Evaluated on `J8-to-J17-Bench` (300 repositories). Achieved **64% Pass@1** (4.6x baseline improvement) and reduced dependency hallucination to **<2%**.
 
 ### **1. Introduction**
 * **1.1 Context:** Automated code migration is critical for security (moving off EOL Java 8).
@@ -61,7 +61,7 @@ Use this structure to draft the content. This strictly follows the USENIX/ACM te
 * **1.3 Contributions:**
     * Formalization of the **Typed Migration Graph**.
     * The **Cyclic Consensus Protocol** for multi-agent verification.
-    * Empirical evaluation on **MigrationBench**.
+    * Empirical evaluation on **J8-to-J17-Bench**.
 
 ### **2. Background & Threat Model**
 * **2.1 LLM Context Decay:** Why transformers fail on long file dependencies.
@@ -81,7 +81,7 @@ Use this structure to draft the content. This strictly follows the USENIX/ACM te
     * Algorithm 1: Pseudocode of the proposal $\rightarrow$ verify $\rightarrow$ sign loop.
 
 ### **4. Evaluation**
-* **4.1 Setup:** `MigrationBench` (Java 8 $\rightarrow$ 17). Hardware specs.
+* **4.1 Setup:** `J8-to-J17-Bench` (Java 8 $\rightarrow$ 17). Hardware specs.
 * **4.2 Metrics:** Pass@1, Hallucination Rate, Semantic Preservation (Test Count).
 * **4.3 Results (Quantitative):**
     * Table 1: Comparison against GPT-4o (Zero-shot) and AutoGPT (Sequential).
@@ -96,7 +96,7 @@ Use this structure to draft the content. This strictly follows the USENIX/ACM te
 
 ### **6. Related Work**
 * **Multi-Agent Systems:** Cite *MetaGPT*, *ChatDev*. Explain why they fail on *migration* (lack of semantic state).
-* **Code Migration:** Cite *MigrationBench*, *LLM4Code*.
+* **Code Migration:** Cite *J8-to-J17-Bench*, *LLM4Code*.
 
 ### **7. Conclusion**
 * Summary of impact: Solves the hallucination problem via shared state.
@@ -116,7 +116,7 @@ Use this structure to draft the content. This strictly follows the USENIX/ACM te
 * **Step 1.2 (Day 3-5):** Define the Consensus Algorithm.
     * Use the "Algorithm" package in LaTeX.
     * *Crucial:* Ensure the algorithm has a "fallback" if consensus fails 3 times (e.g., alert human).
-* **Step 1.3 (Week 2):** Set up `MigrationBench`.
+* **Step 1.3 (Week 2):** Set up `J8-to-J17-Bench`.
     * Download the dataset.
     * Create a Docker container with Java 8, Java 17, and Maven installed.
     * Ensure you can run `mvn test` on the raw dataset *before* migration (establish ground truth).

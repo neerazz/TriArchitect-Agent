@@ -1,11 +1,11 @@
 #!/bin/bash
-# run_experiments.sh - Full MigrationBench Evaluation Pipeline
+# run_experiments.sh - Full J8-to-J17-Bench Evaluation Pipeline
 # 
 # Usage: ./run_experiments.sh [DATA_PATH] [NUM_REPOS]
 
 set -e
 
-DATASET_PATH="${1:-/mnt/data/migrationbench/selected}"
+DATASET_PATH="${1:-/mnt/data/J8-to-J17-Bench/selected}"
 NUM_REPOS="${2:-300}"
 RESULTS_DIR="./evaluation_results"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -13,7 +13,7 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 mkdir -p $RESULTS_DIR
 
 echo "=========================================="
-echo "TriArchitect MigrationBench Evaluation"
+echo "TriArchitect J8-to-J17-Bench Evaluation"
 echo "=========================================="
 echo "Dataset:    $DATASET_PATH"
 echo "Repos:      $NUM_REPOS"

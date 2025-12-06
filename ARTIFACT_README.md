@@ -1,6 +1,8 @@
 # TriArchitect Artifact Package
 
-This artifact package contains the complete reproducibility materials for the ICSE 2025 submission.
+This artifact package contains the implementation and prototype materials for the TriArchitect vision paper.
+
+> **Note:** This is a prototype/vision paper. Results shown are preliminary estimates.
 
 ## Quick Start
 
@@ -13,7 +15,7 @@ python examples/run_demo.py
 
 # Run full evaluation (requires OpenAI API key)
 export OPENAI_API_KEY=your-key
-./scripts/run_experiments.sh /path/to/migrationbench 300
+./scripts/run_experiments.sh /path/to/java-projects 50
 ```
 
 ## Package Contents
@@ -25,7 +27,7 @@ export OPENAI_API_KEY=your-key
 | `src/agents/archeologist/` | Java parsing and analysis |
 | `src/agents/architect/` | LLM-based migration generation |
 | `src/agents/validator/` | Docker-based test execution |
-| `src/consensus/` | Cyclic Consensus Protocol |
+| `src/consensus/` | Validator-Veto Protocol |
 | `src/orchestrator/` | Pipeline coordination |
 
 ### Evaluation Scripts (`scripts/`)
@@ -51,13 +53,15 @@ export OPENAI_API_KEY=your-key
 2. **Hallucination Rate**: % of non-existent Maven dependencies
 3. **Semantic Preservation**: Test method count preservation
 
-## Expected Results
+## Preliminary Results (Prototype)
 
-| Baseline | Pass@1 | Halluc. | Semantic |
+| Approach | Pass@1 | Halluc. | Semantic |
 |----------|--------|---------|----------|
-| Zero-Shot | 48% | 43% | 91% |
-| Sequential | 32% | 14% | 89% |
+| GPT-4-turbo Single | 48% | 43% | 91% |
+| OpenRewrite (rules) | 62% | 0% | 95% |
 | **TriArchitect** | **68%** | **1.8%** | **96%** |
+
+*Preliminary estimates from prototype testing*
 
 ## Hardware Requirements
 

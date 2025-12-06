@@ -20,7 +20,7 @@ python examples/run_demo.py
 
 # Run full evaluation (requires OpenAI API key)
 export OPENAI_API_KEY=your-key
-./scripts/run_experiments.sh ./data/migrationbench 300
+./scripts/run_experiments.sh ./data/J8-to-J17-Bench 300
 ```
 
 ## Repository Structure
@@ -38,8 +38,8 @@ triarchitect-artifact/
 │   ├── run_triarchitect.py
 │   ├── metrics.py
 │   └── analyze_results.py
-├── data/                     # MigrationBench subset
-│   └── migrationbench/       # 300 Java 8→17 migration tasks
+├── data/                     # J8-to-J17-Bench subset
+│   └── J8-to-J17-Bench/       # 300 Java 8→17 migration tasks
 ├── docker/                   # Validator container
 │   └── Dockerfile.validator
 └── tests/                    # Unit tests (94% coverage)
@@ -67,7 +67,7 @@ triarchitect-artifact/
 
 ```bash
 # Run all baselines (expects ~8 hours on 8-core machine)
-./scripts/run_experiments.sh ./data/migrationbench 300
+./scripts/run_experiments.sh ./data/J8-to-J17-Bench 300
 
 # Output: evaluation_results/final_analysis.json
 ```
@@ -92,7 +92,7 @@ python scripts/sensitivity.py \
   --weight_range 0.30,0.35,0.40,0.45,0.50
 ```
 
-## MigrationBench Dataset
+## J8-to-J17-Bench Dataset
 
 300 Java 8→17 migration tasks from:
 

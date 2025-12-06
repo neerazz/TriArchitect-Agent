@@ -1,5 +1,5 @@
 """
-Result Analysis and Figure Generation for MigrationBench Evaluation.
+Result Analysis and Figure Generation for J8-to-J17-Bench Evaluation.
 """
 from __future__ import annotations
 import json
@@ -65,7 +65,7 @@ def create_grouped_bar(df: pd.DataFrame, metrics: list[str], output: Path):
     ax.set_xticklabels(df['baseline'])
     ax.set_ylim(0, 1.0)
     ax.legend()
-    ax.set_title('MigrationBench Evaluation Results')
+    ax.set_title('J8-to-J17-Bench Evaluation Results')
     
     plt.tight_layout()
     plt.savefig(output, dpi=150, bbox_inches='tight')

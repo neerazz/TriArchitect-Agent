@@ -9,7 +9,7 @@ This document contains the research sources, validation notes, and critical anal
 ### Pre-computation Critique Applied
 
 **Logical Gaps Identified in Draft:**
-1. The claim of "94.2% semantic preservation" requires empirical benchmark—addressed via MigrationBench methodology
+1. The claim of "94.2% semantic preservation" requires empirical benchmark—addressed via J8-to-J17-Bench methodology
 2. Hallucination rate comparisons require baseline validation—confirmed via CodeMirage benchmark (Liu et al., 2024)
 3. Consensus mechanism theoretical grounding needed—linked to pBFT voting mechanisms
 

@@ -165,7 +165,7 @@ class ConsensusProtocol:
 
 ---
 
-## Appendix D: MigrationBench Details
+## Appendix D: J8-to-J17-Bench Details
 
 ### Project Selection Criteria
 
@@ -288,7 +288,7 @@ class Handler {
 
 - [x] Source code available (GitHub repository)
 - [x] Environment requirements documented (requirements.txt, Dockerfile)
-- [x] Benchmark dataset available (MigrationBench)
+- [x] Benchmark dataset available (J8-to-J17-Bench)
 - [x] Random seeds specified (42 for all experiments)
 - [x] Hyperparameters documented (Appendix E)
 - [x] Statistical tests specified (Appendix F)

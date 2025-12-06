@@ -1,5 +1,5 @@
 """
-TriArchitect Pipeline Runner for MigrationBench.
+TriArchitect Pipeline Runner for J8-to-J17-Bench.
 """
 from __future__ import annotations
 import json, shutil, time
