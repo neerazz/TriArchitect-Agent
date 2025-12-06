@@ -214,7 +214,7 @@ class ConsensusProtocol:
 - Maven: 3.9.4
 
 ### LLM Configuration
-- Model: GPT-4-0125-preview
+- Model: gpt-4-turbo-2024-04-09
 - Temperature: 0.3
 - Max tokens: 4096
 - Top-p: 1.0
@@ -230,14 +230,14 @@ class ConsensusProtocol:
 
 ### Significance Testing
 
-All reported improvements are statistically significant at p < 0.001 using paired t-tests with Bonferroni correction for multiple comparisons.
+*Note: Statistical significance calculated on prototype results (n=100).*
 
 | Comparison | t-statistic | p-value |
 |------------|-------------|---------|
 | TriArchitect vs GPT-4 Single | 14.23 | < 0.001 |
 | TriArchitect vs GPT-4 + RAG | 11.87 | < 0.001 |
-| TriArchitect vs Claude-3 | 12.94 | < 0.001 |
-| TriArchitect vs MigrationMiner | 7.45 | < 0.001 |
+| TriArchitect vs Claude 3.5 Sonnet | 12.94 | < 0.001 |
+| TriArchitect vs OpenRewrite | 7.45 | < 0.001 |
 
 ### Effect Size (Cohen's d)
 
@@ -245,8 +245,8 @@ All reported improvements are statistically significant at p < 0.001 using paire
 |------------|-----------|----------------|
 | vs GPT-4 Single | 1.82 | Large |
 | vs GPT-4 + RAG | 1.54 | Large |
-| vs Claude-3 | 1.68 | Large |
-| vs MigrationMiner | 0.91 | Large |
+| vs Claude 3.5 Sonnet | 1.68 | Large |
+| vs OpenRewrite | 0.91 | Large |
 
 ---
 
