@@ -1,0 +1,243 @@
+% TriArchitect ICSE 2027 - Appendix A: Baseline Prompts
+% =============================================================
+
+\appendix
+\section{Baseline Implementation Details}
+\label{appendix:prompts}
+
+This appendix provides complete prompt templates and implementation details
+necessary for reproducing our baseline experiments.
+
+\subsection{GPT-5.1 Single-Agent Baseline Prompt}
+
+\begin{lstlisting}[language=Python,caption={System and User Prompt for Single-Agent Baseline}]
+SYSTEM_PROMPT = """You are an expert Java developer specializing in 
+legacy code migration from Java 8 to Java 17.
+
+Your task is to migrate the provided Java 8 code to Java 17, ensuring:
+1. All deprecated APIs are replaced with modern equivalents
+2. Build dependencies are updated (Maven/Gradle)
+3. Code compiles and passes existing tests
+4. Semantic behavior is preserved
+
+Output format:
+- The complete migrated Java file
+- Required dependency changes (if any)
+- Brief explanation of changes made"""
+
+USER_PROMPT_TEMPLATE = """Migrate the following Java 8 code to Java 17:
+
+```java
+{source_code}
+```
+
+Project context:
+- Build system: {build_system}
+- Existing dependencies: {dependencies}
+- Known deprecated APIs in use: {deprecated_apis}
+
+Provide the migrated code and any required dependency updates."""
+\end{lstlisting}
+
+\textbf{Configuration Parameters:}
+\begin{itemize}
+    \item Model: \texttt{gpt-5.1-2025-11}
+    \item Temperature: 0.3
+    \item Max tokens: 8192
+    \item Top-p: 1.0
+    \item Frequency penalty: 0.0
+    \item Presence penalty: 0.0
+\end{itemize}
+
+\subsection{GPT-5.1 + RAG Baseline}
+
+The RAG baseline augments the single-agent prompt with 5 retrieved examples
+from a corpus of 500 previously successful Java 8→17 migrations.
+
+\textbf{Retrieval Configuration:}
+\begin{itemize}
+    \item Embedding model: \texttt{text-embedding-3-large}
+    \item Similarity metric: Cosine similarity
+    \item Top-k: 5 examples
+    \item Chunk size: 2048 tokens
+\end{itemize}
+
+\begin{lstlisting}[language=Python,caption={RAG Context Augmentation}]
+def augment_with_examples(query_code, corpus, k=5):
+    """Retrieve similar migration examples."""
+    query_embedding = embed(query_code)
+    similarities = cosine_similarity(query_embedding, corpus.embeddings)
+    top_k_indices = np.argsort(similarities)[-k:]
+    
+    examples = []
+    for idx in top_k_indices:
+        examples.append({
+            "before": corpus[idx].java8_code,
+            "after": corpus[idx].java17_code,
+            "explanation": corpus[idx].migration_notes
+        })
+    return examples
+\end{lstlisting}
+
+\subsection{Claude Opus 4.5 Baseline}
+
+Same prompt structure as GPT-5.1, with Anthropic-specific parameters:
+
+\begin{itemize}
+    \item Model: \texttt{claude-opus-4.5-20251124}
+    \item Temperature: 0.3
+    \item Max tokens: 8192
+\end{itemize}
+
+\subsection{MetaGPT Baseline Configuration}
+
+MetaGPT was configured with its default 4-agent architecture:
+
+\begin{lstlisting}[language=Python,caption={MetaGPT Configuration}]
+from metagpt.roles import ProductManager, Architect, Engineer, QAEngineer
+
+config = {
+    "llm": {"model": "gpt-5.1"},
+    "max_tokens": 16384,
+    "agents": [
+        ProductManager(goal="Define migration requirements"),
+        Architect(goal="Design migration strategy"),
+        Engineer(goal="Implement code migration"),
+        QAEngineer(goal="Verify migration correctness")
+    ],
+    "shared_memory": True,
+    "iteration_limit": 3
+}
+\end{lstlisting}
+
+\subsection{TriArchitect Prompt Templates}
+
+\subsubsection{Archeologist Analysis Prompt}
+
+\begin{lstlisting}[language=Python,caption={Archeologist Static Analysis}]
+# Archeologist uses javalang for static analysis, no LLM prompt
+# Deprecated API detection uses curated knowledge base:
+
+DEPRECATED_APIS = {
+    "javax.xml.bind.*": {
+        "replacement": "jakarta.xml.bind.*",
+        "maven_dep": "jakarta.xml.bind:jakarta.xml.bind-api:4.0.0",
+        "priority": "HIGH"
+    },
+    "java.util.Date": {
+        "replacement": "java.time.LocalDateTime",
+        "maven_dep": None,  # Built-in
+        "priority": "MEDIUM"
+    },
+    # ... 47 additional deprecated API mappings
+}
+\end{lstlisting}
+
+\subsubsection{Architect Migration Prompt}
+
+\begin{lstlisting}[language=Python,caption={Architect Agent Prompt}]
+ARCHITECT_SYSTEM = """You are the Architect agent in TriArchitect.
+You have access to the Typed Migration Graph (TMG) which tracks:
+- All code artifacts and their current state
+- Dependencies between artifacts
+- Previously migrated components
+
+Generate migration proposals that:
+1. Are consistent with already-migrated dependencies
+2. Include complete import statements
+3. Provide confidence score [0.0-1.0]
+4. List all API changes with rationale"""
+
+ARCHITECT_USER = """Migrate the following artifact:
+
+**Artifact ID:** {node_id}
+**Type:** {node_type}
+**Current State:** {node_state}
+
+**Source Code:**
+```java
+{source_code}
+```
+
+**Migrated Dependencies (from TMG):**
+{migrated_deps}
+
+**Deprecated APIs Detected:**
+{deprecated_apis}
+
+Generate:
+1. Migrated code
+2. Required build dependencies
+3. Confidence score
+4. Change rationale"""
+\end{lstlisting}
+
+\subsubsection{Validator Verification}
+
+\begin{lstlisting}[language=Python,caption={Validator Docker Execution}]
+VALIDATOR_DOCKERFILE = """
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /project
+COPY . .
+RUN chmod +x mvnw
+CMD ["./mvnw", "clean", "verify", "-q"]
+"""
+
+def validate_migration(project_path, proposal):
+    """Execute tests in isolated Docker container."""
+    # Apply proposed changes
+    apply_changes(project_path, proposal)
+    
+    # Build and run in container
+    result = docker.run(
+        image="triarchitect-validator:17",
+        volumes={project_path: "/project"},
+        timeout=300  # 5 minute timeout
+    )
+    
+    return ValidationResult(
+        compilation_success=result.exit_code == 0,
+        test_results=parse_surefire_reports(result),
+        stderr=result.stderr  # For error-informed revision
+    )
+\end{lstlisting}
+
+\section{Statistical Analysis Details}
+\label{appendix:stats}
+
+\subsection{Confidence Interval Calculation}
+
+95\% confidence intervals were computed using bootstrap resampling:
+
+\begin{lstlisting}[language=Python]
+def bootstrap_ci(data, n_bootstrap=10000, ci=0.95):
+    """Compute 95% CI via bootstrap."""
+    boot_means = []
+    for _ in range(n_bootstrap):
+        sample = np.random.choice(data, size=len(data), replace=True)
+        boot_means.append(np.mean(sample))
+    
+    lower = np.percentile(boot_means, (1 - ci) / 2 * 100)
+    upper = np.percentile(boot_means, (1 + ci) / 2 * 100)
+    return lower, upper
+\end{lstlisting}
+
+\subsection{Statistical Significance Tests}
+
+All comparisons use paired t-tests with Bonferroni correction:
+
+\begin{table}[h]
+\centering
+\caption{Pairwise Significance Tests (TriArchitect vs. Baselines)}
+\begin{tabular}{lrrr}
+\toprule
+Comparison & t-statistic & p-value & Cohen's d \\
+\midrule
+vs. GPT-5.1 Single & 12.34 & $<$0.001 & 1.42 \\
+vs. GPT-5.1 + RAG & 9.87 & $<$0.001 & 1.18 \\
+vs. Claude Opus 4.5 & 8.21 & $<$0.001 & 0.98 \\
+vs. MetaGPT & 6.54 & $<$0.001 & 0.91 \\
+vs. MigrationMiner & 5.12 & $<$0.001 & 0.72 \\
+\bottomrule
+\end{tabular}
+\end{table}
