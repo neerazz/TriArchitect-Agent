@@ -57,8 +57,6 @@ tmp/
 *.log
 
 # Output directories
-triarchitect_output/
-*.png
 *.svg
 
 # OS files

@@ -8,6 +8,8 @@
 
 Large Language Models (LLMs) have achieved state-of-the-art performance in code generation, with recent models like GPT-5 and Claude Opus 4.5 demonstrating exceptional reasoning capabilities. However, their application to repository-scale legacy code migration remains hindered by context limitations and state inconsistencies. Recent studies (ISSTA 2025) indicate that while native reasoning errors have decreased, "Contextual Hallucinations"—referencing outdated or non-existent entities across file boundaries—persist at significant rates (e.g., 25.5% in industrial settings [3]) in large codebases. This paper presents **TriArchitect**, a multi-agent framework that addresses these challenges through three contributions: (1) a *Typed Migration Graph* (TMG) providing persistent semantic state; (2) three specialized agents—Archeologist, Architect, and Validator; and (3) a *Validator-Veto Protocol* requiring runtime verification before transformation application. Evaluation on **J8-to-J17-Bench** (1,000 diverse migration tasks) demonstrates that TriArchitect achieves a **System Success Rate (SSR) of 68.4% ± 2.1%**, outperforming both rule-based tools (OpenRewrite: 62.0%) and modern multi-agent baselines (AgentCoder: 59.1% ± 3.1%). Crucially, while GPT-5 achieves a competitive 64.2% SSR largely through raw reasoning power, TriArchitect achieves superior consistency with significantly lower token costs by offloading state management to the TMG.
 
+**Artifact Availability:** Source code and benchmarks are available at [https://github.com/neerazz/TriArchitect-Agent/tree/release-v2](https://github.com/neerazz/TriArchitect-Agent/tree/release-v2).
+
 **Keywords:** code migration, multi-agent systems, large language models, program transformation
 
 ---
@@ -196,44 +198,6 @@ Our framework addresses this by making state explicit in the TMG:
 2.  **TMG Constraint:** The TMG enforces that any node transitioning to MIGRATED *must* drop dependencies on DEPRECATED nodes.
 3.  **Architect:** Receives a constraint-injected prompt: "Dependency `jaxb-api` is Removed. You MUST use `jakarta.xml.bind`."
 4.  **Validator:** Compiles the code. If `javax` remains, compilation fails, and the Veto triggers a correction.
-
----
-
-## 3. The Typed Migration Graph
-
-The Typed Migration Graph constitutes the **core technical contribution** enabling stateful migration. While iterative LLM correction is well-known (Reflexion [NEW5]), the challenge in migration is *context*: single-agent approaches fail because they treat files in isolation.
-
-**[Figure 3: TMG Schema]** *Nodes (Classes) with attributes: qualified_name, state (DEPRECATED→MIGRATED), new_package. Edges represent dependencies.*
-
-### 3.1 Formal Definition
-
-**Definition 1 (Typed Migration Graph).** A TMG is a tuple G = (V, E, τ, σ) where:
-- V is a finite set of vertices representing code artifacts
-- E ⊆ V × V is a set of directed edges representing dependencies
-- τ : V → T is a type function mapping vertices to types
-- σ : V → S is a state function mapping vertices to states
-
-The type set T = {CLASS, INTERFACE, METHOD, FIELD, IMPORT, CONFIG} captures structural categories. The state set S = {UNPROCESSED, ANALYZED, DEPRECATED, MIGRATED, FAILED} tracks migration progress.
-
-### 3.2 State Machine Semantics
-
-**Property 1 (Safe Migration Order).** If G is a directed acyclic graph, processing vertices in topological order ensures that for any transition σ(v): DEPRECATED → MIGRATED, all dependencies u where (v, u) ∈ E satisfy σ(u) = MIGRATED.
-
-This property guarantees that dependencies are migrated before dependents, preventing cascading failures—validated empirically in Section 6.
-
----
-
-## 4. System Architecture
-
-TriArchitect comprises three specialized agents coordinated through the TMG.
-
-**[Figure 1: TriArchitect System Architecture]** *TMG (cylinder) in center; Archeologist, Architect, Validator agents orbiting with read/write arrows.*
-
-### 4.1 Archeologist Agent
-
-The Archeologist performs static analysis to populate the TMG with initial state. Implementation uses `javalang`, a pure-Python Java parser, chosen for cross-platform deployment without JVM dependencies.
-
-**Responsibilities:**
 - **Parsing:** Constructs ASTs for all `.java` files in the repository
 - **Dependency Extraction:** Builds edge set E from imports, inheritance hierarchies, and method call graphs
 - **Deprecation Detection:** Matches API usages against a curated knowledge base of 200+ deprecated patterns (Appendix A)
