@@ -2,7 +2,7 @@
 
 ## Appendix A: Complete Deprecation Knowledge Base
 
-### Java 8 → Java 17 API Mappings
+### Java 8 -> Java 17 API Mappings
 
 | Deprecated API (Java 8) | Replacement (Java 17) | Migration Complexity |
 |-------------------------|----------------------|---------------------|
@@ -151,7 +151,7 @@ class ValidatorVetoProtocol:
 
 ### LLM Configuration
 - **GPT-5 (Preview):** `gpt-5-preview-2025-08-07`
-- **Claude Opus 4.5:** `claude-3-opus-20251124`
+- **Claude Opus 4.5:** `claude-opus-4-5-20251124`
 - **GPT-4-turbo:** `gpt-4-turbo-2024-04-09`
 
 ---
