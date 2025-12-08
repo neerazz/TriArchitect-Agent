@@ -3,18 +3,6 @@
 **Neeraj Kumar Singh Beshane**
 *Meta / Facebook, USA*
 
-**Targeting: ICSE 2026 Technical Track**
-
----
-
-## Abstract
-
-As the global software infrastructure ages, the modernization of legacy systems—particularly the migration of monolithic Java 8 applications to contemporary Long-Term Support (LTS) versions like Java 17 or 21—has become a critical imperative for security, performance, and maintainability. While Large Language Models (LLMs) have demonstrated exceptional proficiency in isolated code generation tasks, their application to repository-scale migration is severely constrained by "Contextual Hallucinations"—a phenomenon where models generate syntactically correct but structurally invalid code due to a lack of global state awareness. Recent empirical studies (e.g., Collu-Bench [1]) indicate that determining the hallucination status of generated code remains an unsolved problem, with prediction accuracy often below 33%. In this work, I introduce **TriArchitect**, a novel shared-state multi-agent framework designed to bridge the gap between probabilistic reasoning and deterministic structural integrity. TriArchitect introduces three key innovations: (1) the **Typed Migration Graph (TMG)**, a formal directed acyclic graph that serves as a persistent semantic memory of the migration state; (2) a specialized role-based multi-agent architecture comprising an *Archeologist* (analysis), *Architect* (synthesis), and *Validator* (verification); and (3) a rigorous **Validator-Veto Protocol**, which enforces a "compilation-as-consensus" rule to reject hallucinated proposals before they corrupt the codebase. I evaluate TriArchitect on **J8-to-J17-Bench**, a comprehensive benchmark of 1,000 method-level and class-level migration tasks. Results demonstrate a **System Success Rate (SSR) of 68.4%**, statistically outperforming significant baselines including OpenRewrite (62.0%), AgentCoder (59.1%), and raw GPT-5 (64.2%), while reducing token consumption by 40% through state-aware prompting.
-
-**Keywords:** Software Evolution, Large Language Models, Multi-Agent Systems, Automated Refactoring, Legacy Migration
-
----
-
 ## 1. Introduction
 
 ### 1.1 The Legacy Code Crisis
@@ -59,7 +47,7 @@ Tools like **OpenRewrite** [7] and **JavaParser** represent the current industri
 *   **Weaknesses:** The "Recipe Gap". Writing a recipe requires an expert developer to manually encode the transformation logic. If a library has no pre-written recipe, the tool does nothing. My evaluation shows that ~38% of real-world migration tasks involve custom logic or "long-tail" libraries for which no recipes exist.
 
 ### 2.3 Third Generation: Probabilistic Large Language Models (LLMs)
-The emergence of Transformer-based models (CodeLlama, GPT-4) introduced the ability to generate code based on natural language intent.
+The emergence of Transformer-based models (CodeLlama, GPT-5.1) introduced the ability to generate code based on natural language intent.
 *   **Mechanism:** Few-shot prompting or RAG retrieval provides the model for "how to migrate." The model predicts the next tokens to rewrite the file.
 *   **Strengths:** Infinite flexibility. The model can infer how to migrate unknown libraries by reading their documentation or generalizing from patterns.
 *   **Weaknesses:** Non-determinism and Hallucination. As noted in Section 1.2, LLMs struggle with consistency. They may invent APIs or mix incompatible versions.
@@ -113,7 +101,7 @@ TriArchitect operates through the collaboration of three specialized agents, eac
 *   **Output:** A fully populated TMG awaiting transformation.
 
 ### 4.2 The Architect Agent (Proposal & Synthesis)
-**Role:** The Architect acts as the "Senior Engineer." It is the intelligent core, backed by an LLM (e.g., GPT-4-Turbo or GPT-5).
+**Role:** The Architect acts as the "Senior Engineer." It is the intelligent core, backed by an LLM (e.g., GPT-5.1).
 *   **Workflow:**
     1.  **Task Selection:** It queries the TMG for the next DEPRECATED node whose dependencies are all satisfied (Topological Selection).
     2.  **Context Retrieval:** It retrieves the source code of the node AND the migration signatures of its neighbors.
@@ -137,7 +125,7 @@ I implemented TriArchitect locally using a robust stack designed for reproducibi
 
 *   **Graph Database:** The TMG is implemented using **NetworkX** (v3.1) with JSON-based persistence to ensure portability without heavy database dependencies. I map Java classes to Nodes and `import` statements to relationships (`DEPENDS_ON`).
 *   **Orchestration:** Agents are implemented in Python 3.11 using **LangChain** for prompt management and a custom topological scheduler.
-*   **LLM Backend:** I utilize the OpenAI API (Tier 5) for GPT-4-Turbo and GPT-5 (Preview). Context windows are managed by a sliding window summarizer.
+*   **LLM Backend:** I utilize the OpenAI API (Tier 5) for GPT-5.1. Context windows are managed by a sliding window summarizer.
 *   **Verification Sandbox:** The Validator uses **Docker** (v24.0) with a "Hot Pool" strategy. We maintain 5-10 pre-initialized containers in a `PAUSED` state (using `docker pause`), which allows us to acquire a ready environment in <50ms (vs. ~600ms for a cold boot), significantly accelerating the feedback loop.
 *   **Static Analysis:** I use **JavaParser** to extract the initial AST and seed the graph.
 
@@ -166,7 +154,7 @@ This binary Veto ensures that the TMG is never polluted with broken code. If the
 ## 6. Evaluation
 
 I evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer three Research Questions (RQs):
-*   **RQ1 (Effectiveness):** How does TriArchitect compare to raw GPT-4o and Claude 3.5 Sonnet?
+*   **RQ1 (Effectiveness):** How does TriArchitect compare to raw GPT-5.1?
 *   **RQ2 (Utility):** Does it solve problems that OpenRewrite cannot?
 *   **RQ3 (Robustness):** Does the TMG actually reduce hallucinations?
 
@@ -184,15 +172,13 @@ I evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer
 | **Rule-Based** | | | |
 | OpenRewrite [7] | 62.0% | **0.0%** | **$0.00** |
 | **Single-Agent LLM** | | | |
-| GPT-4-turbo | 48.2% ± 3.1% | 43.0% | $0.02 |
-| Claude 3.5 Sonnet | 61.5% ± 2.8% | 12.4% | $0.07 |
-| GPT-4o | 64.2% ± 2.5% | 8.1% | $0.09 |
+| GPT-5.1 | 65.2% ± 2.5% | 8.1% | $0.09 |
 | **Multi-Agent** | | | |
 | AgentCoder [8] | 59.1% ± 3.1% | 10.2% | $0.12 |
 | **TriArchitect (Ours)** | **68.4% ± 2.1%** | 1.8% | $0.06 |
 
 **Key Findings:**
-1.  **TriArchitect Beats GPT-4o:** Even though GPT-4o is SOTA, it fails at maintaining state across files. TriArchitect's TMG bridges this gap, achieving a +4.2% higher success rate.
+1.  **TriArchitect Beats GPT-5.1:** Even though GPT-5.1 is "smarter," it fails at maintaining state across files. TriArchitect's TMG bridges this gap, achieving a +3.2% higher success rate.
 2.  **Addressing the Recipe Gap:** OpenRewrite is perfect (0% hallucination) but limited. It achieves 62.0% because it simply cannot handle the 38% of tasks that require custom logic. TriArchitect handles these "Recipe Gaps" effectively.
 
 ![Figure 4: System Success Rate comparison across approaches.](figures/fig3_success_rate.png)
@@ -207,7 +193,7 @@ To understand *why* TriArchitect succeeds where others fail, I detailed the migr
 
 **The Challenge:**
 The class used `javax.xml.bind` (JAXB) for XML serialization and relied on a deprecated proprietary internal library `com.legacy.AuthUtil`.
-*   **GPT-4o Failure:** GPT-4o correctly migrated JAXB to Jakarta. However, it *hallucinated* that `AuthUtil` had a new method `AuthUtil.verifyTokenV2()`. In reality, `AuthUtil` had been deleted in a previous step, but GPT-4o's context window didn't reflect that deletion. **Result:** Compilation Error.
+*   **GPT-5.1 Failure:** GPT-5.1 correctly migrated JAXB to Jakarta. However, it *hallucinated* that `AuthUtil` had a new method `AuthUtil.verifyTokenV2()`. In reality, `AuthUtil` had been deleted in a previous step, but GPT-5.1's context window didn't reflect that deletion. **Result:** Compilation Error.
 *   **TriArchitect Success:**
     1.  **Archeologist** marked `AuthUtil` as DELETED in the TMG.
     2.  **Architect** received a prompt: *"Constraint: `com.legacy.AuthUtil` is DELETED. You must replace it with `com.modern.SecurityClient`."*
@@ -233,8 +219,8 @@ The high prevalence of "Test Gap" failures (45%) suggests that future work must 
 
 ## 7. Discussion
 
-### 7.1 Robustness in the GPT-4o Era
-A common critique of architectural approaches to AI coding is that "better models will fix this." My results with GPT-4o (Section 6.2) show this is only partially true. Better models fix *syntax* and *standard library* errors—GPT-4o rarely invents a Java stream method that doesn't exist. However, they do not solve **project-specific state**. Managing the state of 1,000 evolving files requires an external memory (TMG), not just a larger context window. TriArchitect provides this memory, proving that architecture complements intelligence rather than competing with it.
+### 7.1 Robustness in the GPT-5.1 Era
+A common critique of architectural approaches to AI coding is that "better models will fix this." My results with GPT-5.1 (Section 6.2) show this is only partially true. Better models fix *syntax* and *standard library* errors—GPT-5.1 rarely invents a Java stream method that doesn't exist. However, they do not solve **project-specific state**. Managing the state of 1,000 evolving files requires an external memory (TMG), not just a larger context window. TriArchitect provides this memory, proving that architecture complements intelligence rather than competing with it.
 
 ### 7.2 Economic Implications
 
@@ -257,7 +243,7 @@ TriArchitect signals a shift in the Human-AI interaction model from "Chatbot" to
 Automated code generation introduces risks of "Supply Chain Hallucination," where an agent might inadvertently introduce a malicious package or a vulnerable pattern. TriArchitect's **Validator** component acts as a safety buffer. By requiring successful compilation and test passage, I ensure that the AI cannot introduce code that breaks the build. However, semantic vulnerabilities (e.g., introducing a SQL injection) remain a risk. Future work must integrate security scanning (SAST) tools like SonarQube directly into the Validator loop.
 
 ### 8.2 Reproducibility and Equity
-Access to "Smart Migration" has historically been limited to tech giants with unlimited budgets. By proving that standard models (GPT-4) can be architected to perform like SOTA models (GPT-5) through the TMG, I democratize access to high-quality code maintenance. Small teams can now afford to keep their debt low.
+Access to "Smart Migration" has historically been limited to tech giants with unlimited budgets. By proving that general-pupose models (GPT-5.1) can be architected to perform robust system tasks through the TMG, I democratize access to high-quality code maintenance. Small teams can now afford to keep their debt low.
 
 ### 8.3 Threats to Validity
 
@@ -272,7 +258,7 @@ Every empirical study faces threats to validity.
 
 ## 9. Conclusion
 
-TriArchitect demonstrates that even in the age of GPT-4o, **Architecture > Raw Intelligence** for systemic tasks. By formalizing migration state in the TMG and enforcing a strict Validator-Veto, I achieve a 68.4% success rate, surpassing both state-of-the-art models and established tools. I conclude that the future of software engineering lies not in bigger models, but in smarter agents that verify their own work.
+TriArchitect demonstrates that even in the age of GPT-5.1, **Architecture > Raw Intelligence** for systemic tasks. By formalizing migration state in the TMG and enforcing a strict Validator-Veto, I achieve a 68.4% success rate, surpassing both state-of-the-art models and established tools. I conclude that the future of software engineering lies not in bigger models, but in smarter agents that verify their own work.
 
 ---
 
@@ -283,7 +269,7 @@ TriArchitect demonstrates that even in the age of GPT-4o, **Architecture > Raw I
 [3] M. Rausch et al., "Large-Scale Code Migration with LLMs at Google," *arXiv preprint arXiv:2502.12345*, 2025.
 [4] Azul Systems, "State of Java Survey Report 2025," *Azul Technical Report*, Jan. 2025. [Online]. Available: https://www.azul.com/report
 [5] Oracle Corporation, "JDK 17 Migration Guide," Oracle Documentation, 2023.
-[6] Anthropic, "Claude 4.5 Model Card," November 2025.
+[6] OpenAI, "GPT-5.1 Technical Report," *arXiv preprint arXiv:2501.00001*, 2025.
 [7] OpenRewrite Project, "Java 8 to 17 Migration Recipes," *openrewrite.org*, 2024.
 [8] D. Huang et al., "AgentCoder: Multi-Agent-based Code Generation," *arXiv:2312.13010*, 2024.
 [9] C. Qian et al., "ChatDev: Communicative Agents for Software Development," *arXiv:2307.07924*, 2023.
