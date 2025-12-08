@@ -257,7 +257,7 @@ def validate(
     console.print(f"\n[bold]Validating repository:[/bold] {repository}\n")
     
     from src.agents.validator import ValidatorAgent
-    from src.shared.tmg import TypedMigrationGraph
+    from src.tmg import TypedMigrationGraph
     
     with Progress(
         SpinnerColumn(),

@@ -27,7 +27,7 @@ from javalang.tree import (
 )
 
 from src.shared.logger import get_logger
-from src.shared.tmg.models import EdgeType, NodeType, TMGEdge, TMGNode
+from src.tmg.models import EdgeType, NodeType, TMGEdge, TMGNode
 
 logger = get_logger(__name__, component="java_parser")
 

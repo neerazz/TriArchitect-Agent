@@ -1,7 +1,7 @@
 """Typed Migration Graph (TMG) package."""
 
-from src.shared.tmg.graph import TypedMigrationGraph
-from src.shared.tmg.models import (
+from src.tmg.graph import TypedMigrationGraph
+from src.tmg.models import (
     EdgeType,
     NodeState,
     NodeType,

@@ -20,9 +20,9 @@ from src.agents.validator import ValidatorAgent
 from src.consensus import ConsensusProtocol, ConsensusResult
 from src.shared.config import get_settings
 from src.shared.logger import get_logger, set_correlation_id, setup_logging
-from src.shared.tmg import TypedMigrationGraph
-from src.shared.tmg.models import MigrationProposal, NodeState
-from src.shared.tmg.visualizer import generate_stats_report, visualize_graph
+from src.tmg import TypedMigrationGraph
+from src.tmg.models import MigrationProposal, NodeState
+from src.tmg.visualizer import generate_stats_report, visualize_graph
 
 logger = get_logger(__name__, component="engine")
 

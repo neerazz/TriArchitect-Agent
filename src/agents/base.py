@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Any, Generic, TypeVar
 
 from src.shared.logger import get_logger
-from src.shared.tmg import TypedMigrationGraph
+from src.tmg import TypedMigrationGraph
 
 T = TypeVar("T")
 

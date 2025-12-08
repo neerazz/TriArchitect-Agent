@@ -11,8 +11,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from src.shared.logger import get_logger
-from src.shared.tmg import TypedMigrationGraph
-from src.shared.tmg.models import NodeState, NodeType
+from src.tmg import TypedMigrationGraph
+from src.tmg.models import NodeState, NodeType
 
 logger = get_logger(__name__, component="planner")
 

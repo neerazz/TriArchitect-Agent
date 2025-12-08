@@ -17,8 +17,8 @@ from typing import Any
 from src.agents.base import AgentResult, BaseAgent
 from src.agents.archeologist.parser import JavaParser, ParseResult
 from src.shared.logger import get_logger
-from src.shared.tmg import TypedMigrationGraph
-from src.shared.tmg.models import NodeState
+from src.tmg import TypedMigrationGraph
+from src.tmg.models import NodeState
 
 logger = get_logger(__name__, component="archeologist")
 

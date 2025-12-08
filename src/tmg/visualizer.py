@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 from src.shared.logger import get_logger
-from src.shared.tmg.graph import TypedMigrationGraph
-from src.shared.tmg.models import NodeState, NodeType
+from src.tmg.graph import TypedMigrationGraph
+from src.tmg.models import NodeState, NodeType
 
 logger = get_logger(__name__, component="tmg_visualizer")
 

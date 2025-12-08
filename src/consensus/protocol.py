@@ -20,7 +20,7 @@ from typing import Any, Callable
 from src.consensus.signatures import AgentSignature, SignatureCollection
 from src.shared.config import get_settings
 from src.shared.logger import get_logger
-from src.shared.tmg.models import MigrationProposal
+from src.tmg.models import MigrationProposal
 
 logger = get_logger(__name__, component="consensus")
 

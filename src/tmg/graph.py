@@ -26,7 +26,7 @@ from typing import Any, Iterator
 import networkx as nx
 
 from src.shared.logger import get_logger
-from src.shared.tmg.models import (
+from src.tmg.models import (
     VALID_TRANSITIONS,
     EdgeType,
     NodeState,

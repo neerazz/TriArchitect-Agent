@@ -24,8 +24,8 @@ from src.agents.architect.prompts import (
 from src.agents.base import AgentResult, BaseAgent
 from src.shared.config import get_settings
 from src.shared.logger import get_logger
-from src.shared.tmg import TypedMigrationGraph
-from src.shared.tmg.models import MigrationProposal, NodeState
+from src.tmg import TypedMigrationGraph
+from src.tmg.models import MigrationProposal, NodeState
 
 logger = get_logger(__name__, component="architect")
 

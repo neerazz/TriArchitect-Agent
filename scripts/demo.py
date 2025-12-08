@@ -9,18 +9,22 @@ Typed Migration Graph and Consensus Protocol.
 import json
 import tempfile
 from pathlib import Path
+import sys
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
 # Initialize logging first
+# Add project root to sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from src.shared.logger import setup_logging
 setup_logging(log_level="INFO", log_format="console")
 
 from src.orchestrator import MigrationEngine
-from src.shared.tmg import TypedMigrationGraph
-from src.shared.tmg.visualizer import generate_stats_report
+from src.tmg import TypedMigrationGraph
+from src.tmg.visualizer import generate_stats_report
 
 console = Console()
 
@@ -299,7 +303,7 @@ def run_demo():
             # Demonstrate consensus protocol
             console.print("\n[bold]5. Demonstrating Consensus Protocol...[/bold]")
             from src.consensus import ConsensusProtocol
-            from src.shared.tmg.models import MigrationProposal
+            from src.tmg.models import MigrationProposal
             
             protocol = ConsensusProtocol(threshold=0.8)
             
