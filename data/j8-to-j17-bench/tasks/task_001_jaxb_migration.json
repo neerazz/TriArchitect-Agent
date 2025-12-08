@@ -1,0 +1,18 @@
+{
+    "task_id": "task_001",
+    "name": "javax.xml.bind to jakarta.xml.bind migration",
+    "category": "library_replacement",
+    "difficulty": "medium",
+    "source_version": "8",
+    "target_version": "17",
+    "description": "Migrate JAXB API from javax.xml.bind to jakarta.xml.bind namespace",
+    "source_file": "XmlProcessor.java",
+    "source_code": "import javax.xml.bind.JAXBContext;\nimport javax.xml.bind.Marshaller;\nimport javax.xml.bind.JAXBException;\n\npublic class XmlProcessor {\n    private JAXBContext context;\n    \n    public XmlProcessor(Class<?> clazz) throws JAXBException {\n        this.context = JAXBContext.newInstance(clazz);\n    }\n    \n    public String marshal(Object obj) throws JAXBException {\n        Marshaller m = context.createMarshaller();\n        java.io.StringWriter sw = new java.io.StringWriter();\n        m.marshal(obj, sw);\n        return sw.toString();\n    }\n}",
+    "expected_output": "import jakarta.xml.bind.JAXBContext;\nimport jakarta.xml.bind.Marshaller;\nimport jakarta.xml.bind.JAXBException;\n\npublic class XmlProcessor {\n    private JAXBContext context;\n    \n    public XmlProcessor(Class<?> clazz) throws JAXBException {\n        this.context = JAXBContext.newInstance(clazz);\n    }\n    \n    public String marshal(Object obj) throws JAXBException {\n        Marshaller m = context.createMarshaller();\n        java.io.StringWriter sw = new java.io.StringWriter();\n        m.marshal(obj, sw);\n        return sw.toString();\n    }\n}",
+    "test_command": "mvn test -Dtest=XmlProcessorTest",
+    "tags": [
+        "jaxb",
+        "jakarta",
+        "xml"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "task_id": "task_004",
+    "name": "javax.annotation to jakarta.annotation migration",
+    "category": "library_replacement",
+    "difficulty": "easy",
+    "source_version": "8",
+    "target_version": "17",
+    "description": "Migrate javax.annotation annotations to jakarta.annotation",
+    "source_file": "PaymentService.java",
+    "source_code": "import javax.annotation.PostConstruct;\nimport javax.annotation.PreDestroy;\nimport javax.annotation.Resource;\n\npublic class PaymentService {\n    \n    @Resource\n    private DataSource dataSource;\n    \n    @PostConstruct\n    public void init() {\n        System.out.println(\"PaymentService initialized\");\n    }\n    \n    @PreDestroy\n    public void cleanup() {\n        System.out.println(\"PaymentService destroyed\");\n    }\n}",
+    "expected_output": "import jakarta.annotation.PostConstruct;\nimport jakarta.annotation.PreDestroy;\nimport jakarta.annotation.Resource;\n\npublic class PaymentService {\n    \n    @Resource\n    private DataSource dataSource;\n    \n    @PostConstruct\n    public void init() {\n        System.out.println(\"PaymentService initialized\");\n    }\n    \n    @PreDestroy\n    public void cleanup() {\n        System.out.println(\"PaymentService destroyed\");\n    }\n}",
+    "test_command": "mvn test -Dtest=PaymentServiceTest",
+    "tags": [
+        "jakarta",
+        "annotations",
+        "injection"
+    ]
+}

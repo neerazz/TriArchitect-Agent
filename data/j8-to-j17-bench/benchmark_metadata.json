@@ -1,0 +1,19 @@
+{
+    "benchmark_name": "J8-to-J17-Bench",
+    "version": "1.0",
+    "description": "A curated benchmark of Java 8 to Java 17 migration tasks",
+    "total_tasks": 1000,
+    "sample_tasks_included": 5,
+    "categories": {
+        "library_replacement": "40%",
+        "version_upgrade": "30%",
+        "refactoring": "30%"
+    },
+    "source_projects": [
+        "Apache Commons",
+        "Spring Legacy",
+        "JUnit Examples",
+        "Jakarta EE Samples"
+    ],
+    "full_benchmark_availability": "The complete benchmark (1,000 tasks) is available upon request for academic research purposes. Contact: neerazz@github.com"
+}

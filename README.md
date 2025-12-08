@@ -15,9 +15,10 @@ TriArchitect is an intelligent code migration system that uses three specialized
 - **`src/`**: Source code for Agents, TMG, and Orchestrator.
 - **`scripts/`**: Utility scripts, including the main **POC Demo** (`demo.py`).
 - **`resources/paper/`**: The detailed research paper (`main.md`, `appendix.md`).
-- **`triarchitect-artifact/`**: The complete submission artifact package.
 - **`tests/`**: Unit and integration tests.
-- **`data/`**: Benchmark data (J8-to-J17-Bench).
+- **`data/`**: Benchmark data (J8-to-J17-Bench sample tasks).
+
+> **Note:** This repository includes 5 representative sample tasks from J8-to-J17-Bench. The complete benchmark (1,000 tasks) is available upon request for academic research purposes.
 
 ---
 

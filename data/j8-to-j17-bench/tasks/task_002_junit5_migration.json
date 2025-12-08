@@ -1,0 +1,18 @@
+{
+    "task_id": "task_002",
+    "name": "JUnit 4 to JUnit 5 migration",
+    "category": "version_upgrade",
+    "difficulty": "medium",
+    "source_version": "8",
+    "target_version": "17",
+    "description": "Migrate test class from JUnit 4 annotations to JUnit 5",
+    "source_file": "UserServiceTest.java",
+    "source_code": "import org.junit.Test;\nimport org.junit.Before;\nimport org.junit.Assert;\nimport org.junit.runner.RunWith;\nimport org.mockito.junit.MockitoJUnitRunner;\n\n@RunWith(MockitoJUnitRunner.class)\npublic class UserServiceTest {\n    \n    private UserService service;\n    \n    @Before\n    public void setUp() {\n        service = new UserService();\n    }\n    \n    @Test\n    public void testFindUser() {\n        User user = service.findById(1L);\n        Assert.assertNotNull(user);\n        Assert.assertEquals(\"John\", user.getName());\n    }\n    \n    @Test(expected = UserNotFoundException.class)\n    public void testFindUserNotFound() {\n        service.findById(999L);\n    }\n}",
+    "expected_output": "import org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.extension.ExtendWith;\nimport org.mockito.junit.jupiter.MockitoExtension;\nimport static org.junit.jupiter.api.Assertions.*;\n\n@ExtendWith(MockitoExtension.class)\npublic class UserServiceTest {\n    \n    private UserService service;\n    \n    @BeforeEach\n    public void setUp() {\n        service = new UserService();\n    }\n    \n    @Test\n    public void testFindUser() {\n        User user = service.findById(1L);\n        assertNotNull(user);\n        assertEquals(\"John\", user.getName());\n    }\n    \n    @Test\n    public void testFindUserNotFound() {\n        assertThrows(UserNotFoundException.class, () -> {\n            service.findById(999L);\n        });\n    }\n}",
+    "test_command": "mvn test -Dtest=UserServiceTest",
+    "tags": [
+        "junit",
+        "testing",
+        "junit5"
+    ]
+}

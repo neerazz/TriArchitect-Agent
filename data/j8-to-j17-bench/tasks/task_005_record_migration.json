@@ -1,0 +1,18 @@
+{
+    "task_id": "task_005",
+    "name": "Java Record migration",
+    "category": "refactoring",
+    "difficulty": "medium",
+    "source_version": "8",
+    "target_version": "17",
+    "description": "Refactor POJO class to Java 17 Record",
+    "source_file": "UserDTO.java",
+    "source_code": "import java.util.Objects;\n\npublic class UserDTO {\n    private final String name;\n    private final String email;\n    private final int age;\n    \n    public UserDTO(String name, String email, int age) {\n        this.name = name;\n        this.email = email;\n        this.age = age;\n    }\n    \n    public String getName() { return name; }\n    public String getEmail() { return email; }\n    public int getAge() { return age; }\n    \n    @Override\n    public boolean equals(Object o) {\n        if (this == o) return true;\n        if (o == null || getClass() != o.getClass()) return false;\n        UserDTO userDTO = (UserDTO) o;\n        return age == userDTO.age && \n               Objects.equals(name, userDTO.name) && \n               Objects.equals(email, userDTO.email);\n    }\n    \n    @Override\n    public int hashCode() {\n        return Objects.hash(name, email, age);\n    }\n    \n    @Override\n    public String toString() {\n        return \"UserDTO{name='\" + name + \"', email='\" + email + \"', age=\" + age + \"}\";\n    }\n}",
+    "expected_output": "public record UserDTO(String name, String email, int age) {}",
+    "test_command": "mvn test -Dtest=UserDTOTest",
+    "tags": [
+        "records",
+        "java17",
+        "refactoring"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "task_id": "task_003",
+    "name": "Stream API refactoring",
+    "category": "refactoring",
+    "difficulty": "easy",
+    "source_version": "8",
+    "target_version": "17",
+    "description": "Refactor legacy for-loop to use Java Streams API",
+    "source_file": "OrderProcessor.java",
+    "source_code": "import java.util.List;\nimport java.util.ArrayList;\n\npublic class OrderProcessor {\n    \n    public List<Order> filterPaidOrders(List<Order> orders) {\n        List<Order> result = new ArrayList<>();\n        for (Order order : orders) {\n            if (order.isPaid()) {\n                result.add(order);\n            }\n        }\n        return result;\n    }\n    \n    public double calculateTotal(List<Order> orders) {\n        double total = 0;\n        for (Order order : orders) {\n            total += order.getAmount();\n        }\n        return total;\n    }\n}",
+    "expected_output": "import java.util.List;\nimport java.util.stream.Collectors;\n\npublic class OrderProcessor {\n    \n    public List<Order> filterPaidOrders(List<Order> orders) {\n        return orders.stream()\n            .filter(Order::isPaid)\n            .collect(Collectors.toList());\n    }\n    \n    public double calculateTotal(List<Order> orders) {\n        return orders.stream()\n            .mapToDouble(Order::getAmount)\n            .sum();\n    }\n}",
+    "test_command": "mvn test -Dtest=OrderProcessorTest",
+    "tags": [
+        "streams",
+        "refactoring",
+        "functional"
+    ]
+}
