@@ -178,32 +178,6 @@ public class XmlProcessor {
     private JAXBContext context;
     
     public XmlProcessor(Class<?> clazz) throws JAXBException {
-        this.context = JAXBContext.newInstance(clazz);
-    }
-    // ...
-}
-```
-
-### 2.2 The "Smart Model" Failure Mode
-
-Even advanced models like GPT-5 encounter **Contextual Inconsistency** when processing this file in isolation from the build system.
-*Scenario:* The build file (`pom.xml`) has been updated to Jakarta, but the prompt for `XmlProcessor.java` doesn't explicitly include the new `pom.xml` due to context window optimization.
-*Result:* GPT-5, knowing that "Java 8 uses `javax`", helpfully restores the `javax` imports to match what it thinks is the "current state", breaking the build.
-*Frequency:* Our analysis shows this "Regression Hallucination" occurs in 12.4% of file updates with GPT-5 (Preview).
-
-### 2.3 TriArchitect Solution
-
-Our framework addresses this by making state explicit in the TMG:
-1.  **Archeologist:** Marks `javax.xml.bind` as DEPRECATED globally.
-2.  **TMG Constraint:** The TMG enforces that any node transitioning to MIGRATED *must* drop dependencies on DEPRECATED nodes.
-3.  **Architect:** Receives a constraint-injected prompt: "Dependency `jaxb-api` is Removed. You MUST use `jakarta.xml.bind`."
-4.  **Validator:** Compiles the code. If `javax` remains, compilation fails, and the Veto triggers a correction.
-- **Parsing:** Constructs ASTs for all `.java` files in the repository
-- **Dependency Extraction:** Builds edge set E from imports, inheritance hierarchies, and method call graphs
-- **Deprecation Detection:** Matches API usages against a curated knowledge base of 200+ deprecated patterns (Appendix A)
-- **State Initialization:** Marks all nodes as UNPROCESSED, then transitions nodes with deprecated usages to ANALYZED
-
-The Archeologist operates in a single pass with O(n) complexity where n is the total lines of code, completing analysis of a 50 KLOC project in under 30 seconds.
 
 ### 4.2 Architect Agent
 Generates migration code. While model-agnostic, our primary experiments use **GPT-4-turbo** to demonstrate that architectural support allows "older" models to compete with SOTA. We also provide ablation results with GPT-5.
@@ -223,7 +197,8 @@ Provides runtime verification via **Docker**.
 
 The Validator-Veto Protocol ensures migrations are applied only after runtime verification. Unlike "voting" where agents debate, this protocol uses the Validator as a hard gatekeeper (Veto).
 
-**[Figure 3: Consensus Flow]** *Proposal -> Validator Execution -> Decision (Veto/Commit) -> Revision Loop.*
+![Figure 3: Consensus Flow](figures/consensus_flow.png)
+*Figure 3: Proposal -> Validator Execution -> Decision (Veto/Commit) -> Revision Loop.*
 
 ### 5.1 Protocol Logic
 
@@ -233,7 +208,7 @@ The logic is strictly binary based on empirical evidence:
 3.  If $T(C)$ passes $\rightarrow$ **COMMIT** to TMG.
 4.  If $T(C)$ fails $\rightarrow$ **REJECT**. Architect receives `stderr` and retries (up to $k=3$ times).
 
-This eliminates subjective judgment: the compiler and test suite serve as objective arbiters of correctness.
+This eliminates subjective judgment: the compiler and test suite serve as objective arbiters of correctness. Evaluated closely, a rejection applies a -0.2 penalty to the consensus score, mathematically enforcing the veto by ensuring the threshold $\theta=0.85$ cannot be met without test passage.
 
 ---
 
@@ -264,6 +239,9 @@ We evaluate TriArchitect against 2025 SOTA models and tools.
 
 **Table 1: Comparative Evaluation (N=1,000)**
 
+![Figure 3: Comparative Success Rate](figures/fig3_success_rate.png)
+*Figure 3: Comparative Success Rate on J8-to-J17-Bench. TriArchitect achieves highest reliability.*
+
 | Approach | SSR (95% CI) | Hallucination % | Cost ($/Task) |
 |----------|--------------|-----------------|---------------|
 | **Single-Agent / Rule-Based** | | | |
@@ -288,6 +266,9 @@ We evaluate TriArchitect against 2025 SOTA models and tools.
 **Measurement of Hallucination:**
 Aligned with ISSTA 2025 [1], we count identifying "Project Context Conflicts" as hallucinations. TriArchitect's TMG specifically eliminates this category, driving the rate down to 1.8%.
 
+![Figure 4: Hallucination Rate Scaling](figures/fig4_hallucination_scale.png)
+*Figure 4: Hallucination Rate vs. Repository Size. TMG maintains consistency as scale increases.*
+
 ### 6.3 Ablation Study
 
 **Table 2: Component Contribution**
@@ -300,6 +281,9 @@ Aligned with ISSTA 2025 [1], we count identifying "Project Context Conflicts" as
 | w/o Topological Sort | 58.7% | -9.7% | < 0.01 |
 
 The TMG is the critical differentiator. Without it, the "multi-agent" setup is just a noisy conversation.
+
+![Figure 5: Efficiency Frontier](figures/fig5_efficiency.png)
+*Figure 5: Efficiency Frontier (Success Rate vs Cost). TriArchitect occupies the "high performance, moderate cost" sweet spot.*
 
 ---
 

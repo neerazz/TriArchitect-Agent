@@ -254,6 +254,27 @@ def add_content(doc, title, content_path):
              run = p.add_run(line)
              run.font.name = 'Courier New'
              run.font.size = Pt(8)
+        elif line.startswith('!['):
+            # Handle standard markdown image: ![Alt Text](path)
+            match = re.search(r'!\[(.*?)\]\((.*?)\)', line)
+            if match:
+                alt_text = match.group(1)
+                img_path = match.group(2)
+                
+                # Resolve path relative to PAPER_DIR
+                full_path = PAPER_DIR / img_path
+                
+                if full_path.exists():
+                     try:
+                        doc.add_picture(str(full_path), width=Inches(3.5))
+                        display_caption(doc, alt_text)
+                     except Exception as e:
+                        print(f"Error adding image {full_path}: {e}")
+                else:
+                    print(f"Warning: Image not found at {full_path}")
+            else:
+                 p = doc.add_paragraph(line) # Fallback
+
         else:
             # Check for bold/italic markdown
             p = doc.add_paragraph()
@@ -274,6 +295,8 @@ def add_content(doc, title, content_path):
                 p.paragraph_format.left_indent = Inches(0.5)
                 p.paragraph_format.right_indent = Inches(0.5)
                 p.font.bold = True
+
+
 
 def display_caption(doc, text):
     p = doc.add_paragraph(text)
