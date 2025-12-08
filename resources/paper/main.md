@@ -1,5 +1,8 @@
 # TriArchitect: A Shared-State Multi-Agent Framework for Safe Java Code Migration
 
+**Neeraj Kumar Singh Beshane**
+*Meta / Facebook, USA*
+
 **Targeting: ICSE 2026 Technical Track**
 
 ---
