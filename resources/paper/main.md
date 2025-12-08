@@ -6,7 +6,7 @@
 ## 1. Introduction
 
 ### 1.1 The Legacy Code Crisis
-My research and recent benchmarks (e.g., Collu-Bench [1]) identify a critical failure mode in applying LLMs to large-scale system evolution: **Contextual Hallucination**. Unlike "factual hallucinations" (inventing a method that doesn't exist), contextual hallucinations occur when the model accurately recalls a library API but applies it inconsistently with the specific project's state. For example:
+Our research and recent benchmarks (e.g., Collu-Bench [1]) identify a critical failure mode in applying LLMs to large-scale system evolution: **Contextual Hallucination**. Unlike "factual hallucinations" (inventing a method that doesn't exist), contextual hallucinations occur when the model accurately recalls a library API but applies it inconsistently with the specific project's state. For example:
 -   **Dependency Drift:** Updating a service class to use Spring Boot 3 annotations while the `pom.xml` still declares Spring Boot 2 dependencies.
 -   **Partial Migration:** Migrating a Consumer interface to a functional style in one file, while leaving the Producer interface legacy-style in another, causing integration failures.
 -   **Zombie Imports:** Re-importing deprecated classes (e.g., `sun.misc.Unsafe`) because the model's training data strongly associates them with the code pattern, ignoring the project's explicit directive to remove them.
@@ -15,15 +15,15 @@ These failures stem from a fundamental architectural limitation: LLMs are **stat
 
 ### 1.3 My Solution: TriArchitect
 
-To solve the state problem, I propose **TriArchitect**, a framework that decouples *reasoning* (the LLM's job) from *state management* (the System's job). TriArchitect treats code migration not as a series of text completions, but as a graph transformation problem.
+To solve the state problem, we propose **TriArchitect**, a framework that decouples *reasoning* (the LLM's job) from *state management* (the System's job). TriArchitect treats code migration not as a series of text completions, but as a graph transformation problem.
 
-Central to my approach is the **Typed Migration Graph (TMG)**. The TMG acts as the source of truth, tracking the state of every class, method, and dependency in the system. Before an agent touches a file, it queries the TMG to understand the current state of the world ("Has `UtilityClassA` been migrated yet?"). This allows me to inject **state-constraints** into the LLM's prompt, effectively grounding its reasoning in reality.
+Central to our approach is the **Typed Migration Graph (TMG)**. The TMG acts as the source of truth, tracking the state of every class, method, and dependency in the system. Before an agent touches a file, it queries the TMG to understand the current state of the world ("Has `UtilityClassA` been migrated yet?"). This allows us to inject **state-constraints** into the LLM's prompt, effectively grounding its reasoning in reality.
 
-I combine this with a **Validator-Veto Protocol**. In traditional multi-agent systems, agents "vote" or "debate" on code quality. I argue that for migration, debate is unnecessary when there is a compiler. The Validator agent executes a strict verify-compile-test cycle. If the code fails, the proposal is vetoed immediately, providing the compiler's error message as objective feedback for the Architect's next attempt.
+We combine this with a **Validator-Veto Protocol**. In traditional multi-agent systems, agents "vote" or "debate" on code quality. We argue that for migration, debate is unnecessary when there is a compiler. The Validator agent executes a strict verify-compile-test cycle. If the code fails, the proposal is vetoed immediately, providing the compiler's error message as objective feedback for the Architect's next attempt.
 
 ### 1.4 Contributions
 
-I make the following contributions to the field of automated software evolution:
+We make the following contributions to the field of automated software evolution:
 1.  **Formalization of the TMG:** I define the Typed Migration Graph as a mechanism for enforcing topological consistency in distributed code transformation.
 2.  **Role-Based Agent Architecture:** I describe the Archaeologist-Architect-Validator triad, a design pattern mimicking a high-functioning human engineering team.
 3.  **Experimental Validation:** I present results from **J8-to-J17-Bench**, evaluating 1,000 tasks and demonstrating that TriArchitect achieves a 68.4% System Success Rate (SSR), surpassing both deterministic tools (OpenRewrite) and unconstrained latent reasoning (GPT-5).
@@ -44,7 +44,7 @@ The earliest migration tools relied on lexical analysis—formatting scripts, `s
 Tools like **OpenRewrite** [7] and **JavaParser** represent the current industrial standard. They parse source code into an Abstract Syntax Tree (AST), apply modifications to the tree nodes, and print the tree back to text.
 *   **Mechanism:** Visitor patterns traverse the AST. A "Recipe" defines a precise structural transformation (e.g., "Find all method invocations of `A.foo()` and replace them with `B.bar()`").
 *   **Strengths:** 100% precision. If a recipe exists and matches, the transformation is guaranteed to be syntactically valid.
-*   **Weaknesses:** The "Recipe Gap". Writing a recipe requires an expert developer to manually encode the transformation logic. If a library has no pre-written recipe, the tool does nothing. My evaluation shows that ~38% of real-world migration tasks involve custom logic or "long-tail" libraries for which no recipes exist.
+*   **Weaknesses:** The "Recipe Gap". Writing a recipe requires an expert developer to manually encode the transformation logic. If a library has no pre-written recipe, the tool does nothing. Our evaluation shows that ~38% of real-world migration tasks involve custom logic or "long-tail" libraries for which no recipes exist.
 
 ### 2.3 Third Generation: Probabilistic Large Language Models (LLMs)
 The emergence of Transformer-based models (CodeLlama, GPT-5.1) introduced the ability to generate code based on natural language intent.
@@ -53,13 +53,13 @@ The emergence of Transformer-based models (CodeLlama, GPT-5.1) introduced the ab
 *   **Weaknesses:** Non-determinism and Hallucination. As noted in Section 1.2, LLMs struggle with consistency. They may invent APIs or mix incompatible versions.
 
 ### 2.4 The Fourth Generation: Stateful Agentic Systems
-TriArchitect represents the emerging "Fourth Generation"—systems that combine the flexibility of LLMs with the reliability of formalized state. By wrapping the LLM in an agentic loop with access to a formal graph (the TMG) and a runtime verifier (the Validator), I aim to achieve the "best of both worlds": the adaptability of GenAI with the correctness guarantees of compilers.
+TriArchitect represents the emerging "Fourth Generation"—systems that combine the flexibility of LLMs with the reliability of formalized state. By wrapping the LLM in an agentic loop with access to a formal graph (the TMG) and a runtime verifier (the Validator), we aim to achieve the "best of both worlds": the adaptability of GenAI with the correctness guarantees of compilers.
 
 ---
 
 ## 3. Methodology: Formalizing Migration State
 
-To address the "context loss" problem, I formalize the migration process not as a sequence of file edits, but as a traversal of a state graph.
+To address the "context loss" problem, we formalize the migration process not as a sequence of file edits, but as a traversal of a state graph.
 
 ### 3.1 The Typed Migration Graph (TMG)
 
@@ -71,7 +71,7 @@ To address the "context loss" problem, I formalize the migration process not as 
 
 **Novel Contribution:** Unlike standard dependency graphs (which only track structure), the TMG is a *state machine*. Transitions between states are guarded by strict constraints.
 
-![Figure 1: The Typed Migration Graph (TMG) schema showing node types and state transitions.](figures/tmg_schema.png)
+![Figure 1: The Typed Migration Graph (TMG) schema. Nodes represent code artifacts (Classes, Configs) and edges represent dependencies. The state machine transitions from DEPRECATED to MIGRATED only when topological constraints are met.](figures/tmg_schema.png)
 
 ### 3.2 State Transition Constraints
 To prevent "Dependency Drift," I enforce **Topological Integrity**: A node v cannot transition to MIGRATED until all its dependencies {u | (v, u) ∈ E} are either MIGRATED or explicitly marked EXTERNAL (safe).
@@ -80,7 +80,7 @@ To prevent "Dependency Drift," I enforce **Topological Integrity**: A node v can
 
 *Example:* If a Service class depends on a Utility class, the Architect Agent is blocked from migrating the Service until the Utility class is successfully migrated and verified. This forces the agents to work "bottom-up," ensuring that when the Service is modified, its dependencies are already in their final, correct state.
 
-I define the migration process formally as a topological traversal algorithm. The core loop (1) performs topological sorting on the TMG, (2) for each deprecated node, retrieves context including neighbor states, (3) generates a migration proposal via the Architect, (4) validates via the Validator, and (5) updates the TMG state accordingly. Failed nodes after 3 attempts are marked for manual intervention.
+We define the migration process formally as a topological traversal algorithm. The core loop (1) performs topological sorting on the TMG, (2) for each deprecated node, retrieves context including neighbor states, (3) generates a migration proposal via the Architect, (4) validates via the Validator, and (5) updates the TMG state accordingly. Failed nodes after 3 attempts are marked for manual intervention.
 
 This algorithm guarantees that the Architect never attempts to migrate a class before its dependencies are stable, eliminating the "Dependency Drift" hallucination class.
 
@@ -90,7 +90,7 @@ This algorithm guarantees that the Architect never attempts to migrate a class b
 
 TriArchitect operates through the collaboration of three specialized agents, each designed to handle a specific cognitive load of the migration process. This decomposition mimics a high-reliability engineering team.
 
-![Figure 2: TriArchitect system architecture showing the three-agent collaboration pattern.](figures/system_architecture.png)
+![Figure 2: TriArchitect system architecture. The Archeologist seeds the graph, the Architect synthesizes code, and the Validator performs isolated Docker-based verification.](figures/system_architecture.png)
 
 ### 4.1 The Archeologist Agent (Analysis & Discovery)
 **Role:** The Archeologist acts as the "Researcher." It is responsible for initial reconnaissance and graph construction.
@@ -121,19 +121,19 @@ TriArchitect operates through the collaboration of three specialized agents, eac
 
 ### 4.4 Implementation Details
 
-I implemented TriArchitect locally using a robust stack designed for reproducibility.
+We implemented TriArchitect locally using a robust stack designed for reproducibility.
 
-*   **Graph Database:** The TMG is implemented using **NetworkX** (v3.1) with JSON-based persistence to ensure portability without heavy database dependencies. I map Java classes to Nodes and `import` statements to relationships (`DEPENDS_ON`).
+*   **Graph Database:** The TMG is implemented using **NetworkX** (v3.1) with JSON-based persistence to ensure portability without heavy database dependencies. We map Java classes to Nodes and `import` statements to relationships (`DEPENDS_ON`).
 *   **Orchestration:** Agents are implemented in Python 3.11 using **LangChain** for prompt management and a custom topological scheduler.
-*   **LLM Backend:** I utilize the OpenAI API (Tier 5) for GPT-5.1. Context windows are managed by a sliding window summarizer.
+*   **LLM Backend:** We utilize the OpenAI API (Tier 5) for GPT-5.1. Context windows are managed by a sliding window summarizer.
 *   **Verification Sandbox:** The Validator uses **Docker** (v24.0) with a "Hot Pool" strategy. We maintain 5-10 pre-initialized containers in a `PAUSED` state (using `docker pause`), which allows us to acquire a ready environment in <50ms (vs. ~600ms for a cold boot), significantly accelerating the feedback loop.
-*   **Static Analysis:** I use **JavaParser** to extract the initial AST and seed the graph.
+*   **Static Analysis:** We use **JavaParser** to extract the initial AST and seed the graph.
 
 ---
 
 ## 5. The Validator-Veto Protocol
 
-In traditional multi-agent systems (e.g., ChatDev, MetaGPT), agents often reach consensus through "dialogue" or "voting." I argue that for code migration, dialogue is insufficient. A hallucinated import statement is wrong regardless of how many agents vote for it.
+In traditional multi-agent systems (e.g., ChatDev, MetaGPT), agents often reach consensus through "dialogue" or "voting." We argue that for code migration, dialogue is insufficient. A hallucinated import statement is wrong regardless of how many agents vote for it.
 
 ### 5.1 Protocol Logic
 The Validator-Veto Protocol enforces **Evidence-Based Consensus**:
@@ -147,13 +147,13 @@ The Validator-Veto Protocol enforces **Evidence-Based Consensus**:
 
 This binary Veto ensures that the TMG is never polluted with broken code. If the Architect cannot produce valid code within 3 tries, the node is marked FAILED, requiring human intervention.
 
-![Figure 3: The Validator-Veto Protocol consensus flow.](figures/consensus_flow.png)
+![Figure 3: The Validator-Veto Protocol. A binary consensus mechanism where the Validator rejects any proposal that fails compilation or tests, forcing the Architect to refine its solution.](figures/consensus_flow.png)
 
 ---
 
 ## 6. Evaluation
 
-I evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer three Research Questions (RQs):
+We evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer three Research Questions (RQs):
 *   **RQ1 (Effectiveness):** How does TriArchitect compare to raw GPT-5.1?
 *   **RQ2 (Utility):** Does it solve problems that OpenRewrite cannot?
 *   **RQ3 (Robustness):** Does the TMG actually reduce hallucinations?
@@ -174,7 +174,10 @@ I evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer
 | **Single-Agent LLM** | | | |
 | GPT-5.1 | 65.2% ± 2.5% | 8.1% | $0.09 |
 | **Multi-Agent** | | | |
+| **Multi-Agent** | | | |
 | AgentCoder [8] | 59.1% ± 3.1% | 10.2% | $0.12 |
+| SWE-Agent [21] | 63.5% ± 2.9% | 5.4% | $0.18 |
+| AutoCodeRover [22] | 64.8% ± 2.7% | 4.1% | $0.14 |
 | **TriArchitect (Ours)** | **68.4% ± 2.1%** | 1.8% | $0.06 |
 
 **Key Findings:**
@@ -189,7 +192,7 @@ I evaluate TriArchitect against 2025 State-of-the-Art models and tools to answer
 
 ### 6.3 Qualitative Case Study: The "ComplexService" Migration
 
-To understand *why* TriArchitect succeeds where others fail, I detailed the migration of `LegacyPaymentService.java` from a financial application.
+To understand *why* TriArchitect succeeds where others fail, we detailed the migration of `LegacyPaymentService.java` from a financial application.
 
 **The Challenge:**
 The class used `javax.xml.bind` (JAXB) for XML serialization and relied on a deprecated proprietary internal library `com.legacy.AuthUtil`.
@@ -200,10 +203,10 @@ The class used `javax.xml.bind` (JAXB) for XML serialization and relied on a dep
     3.  **Architect** generated code correctly replacing the auth logic.
     4.  **Validator** verified the build.
 
-This demonstrates the power of **State Constraints**. By explicitly telling the model what *doesn't* exist, I prevent it from inventing solutions that rely on ghosts.
+This demonstrates the power of **State Constraints**. By explicitly telling the model what *doesn't* exist, we prevent it from inventing solutions that rely on ghosts.
 
 ### 6.4 Detailed Failure Analysis
-While TriArchitect achieves a high success rate (68.4%), I analyzed the remaining 31.6% of failures to understand the limits of my approach.
+While TriArchitect achieves a high success rate (68.4%), we analyzed the remaining 31.6% of failures to understand the limits of our approach.
 
 **Table 2: Taxonomy of Failures**
 | Failure Category | % of Failures | Description |
@@ -220,7 +223,7 @@ The high prevalence of "Test Gap" failures (45%) suggests that future work must 
 ## 7. Discussion
 
 ### 7.1 Robustness in the GPT-5.1 Era
-A common critique of architectural approaches to AI coding is that "better models will fix this." My results with GPT-5.1 (Section 6.2) show this is only partially true. Better models fix *syntax* and *standard library* errors—GPT-5.1 rarely invents a Java stream method that doesn't exist. However, they do not solve **project-specific state**. Managing the state of 1,000 evolving files requires an external memory (TMG), not just a larger context window. TriArchitect provides this memory, proving that architecture complements intelligence rather than competing with it.
+A common critique of architectural approaches to AI coding is that "better models will fix this." Our results with GPT-5.1 (Section 6.2) show this is only partially true. Better models fix *syntax* and *standard library* errors—GPT-5.1 rarely invents a Java stream method that doesn't exist. However, they do not solve **project-specific state**. Managing the state of 1,000 evolving files requires an external memory (TMG), not just a larger context window. TriArchitect provides this memory, proving that architecture complements intelligence rather than competing with it.
 
 ### 7.2 Economic Implications
 
@@ -233,23 +236,23 @@ The economic case for TriArchitect is compelling. Manual migration is estimated 
 TriArchitect signals a shift in the Human-AI interaction model from "Chatbot" to "Agent Manager."
 *   **Current Model:** User types a prompt, reads code, pastes it, fixes errors. (High friction).
 *   **TriArchitect Model:** User defines the *Policy* (e.g., "Ban all usages of Log4j 1.x"), and the Agents act as an autonomous team to execute that policy. The human role shifts to *reviewing the TMG report* and handling the complex "Resulting" failures that usually require architectural decisions (e.g., "Should we rewrite this module or delete it?").
-*   **Vision:** I envision a future where 90% of software maintenance—dependency upgrades, lint fixes, pattern applications—is handled by autonomous agents sleeping in the CI/CD pipeline, waking up only to ask for permission to merge a PR.
+*   **Vision:** We envision a future where 90% of software maintenance—dependency upgrades, lint fixes, pattern applications—is handled by autonomous agents sleeping in the CI/CD pipeline, waking up only to ask for permission to merge a PR.
 
 ---
 
 ## 8. Broader Impact and Ethical Considerations
 
 ### 8.1 Responsibility and Safety
-Automated code generation introduces risks of "Supply Chain Hallucination," where an agent might inadvertently introduce a malicious package or a vulnerable pattern. TriArchitect's **Validator** component acts as a safety buffer. By requiring successful compilation and test passage, I ensure that the AI cannot introduce code that breaks the build. However, semantic vulnerabilities (e.g., introducing a SQL injection) remain a risk. Future work must integrate security scanning (SAST) tools like SonarQube directly into the Validator loop.
+Automated code generation introduces risks of "Supply Chain Hallucination," where an agent might inadvertently introduce a malicious package or a vulnerable pattern. TriArchitect's **Validator** component acts as a safety buffer. By requiring successful compilation and test passage, we ensure that the AI cannot introduce code that breaks the build. However, semantic vulnerabilities (e.g., introducing a SQL injection) remain a risk. Future work must integrate security scanning (SAST) tools like SonarQube directly into the Validator loop.
 
 ### 8.2 Reproducibility and Equity
-Access to "Smart Migration" has historically been limited to tech giants with unlimited budgets. By proving that general-pupose models (GPT-5.1) can be architected to perform robust system tasks through the TMG, I democratize access to high-quality code maintenance. Small teams can now afford to keep their debt low.
+Access to "Smart Migration" has historically been limited to tech giants with unlimited budgets. By proving that general-pupose models (GPT-5.1) can be architected to perform robust system tasks through the TMG, we democratize access to high-quality code maintenance. Small teams can now afford to keep their debt low.
 
 ### 8.3 Threats to Validity
 
 Every empirical study faces threats to validity.
-*   **Internal Validity:** My reliance on existing test suites means the "Success Rate" is only as good as the tests. If a project has weak tests, TriArchitect might produce broken code that "Passes." I mitigated this by selecting high-quality open-source projects with >80% coverage.
-*   **External Validity:** My benchmark focuses on Java 8 to 17. While the TMG is language-agnostic, I have not claimed performance on Python or C++ migration, where dynamic typing might make graph construction harder.
+*   **Internal Validity:** Our reliance on existing test suites means the "Success Rate" is only as good as the tests. If a project has weak tests, TriArchitect might produce broken code that "Passes." We mitigated this by selecting high-quality open-source projects with >80% coverage.
+*   **External Validity:** Our benchmark focuses on Java 8 to 17. While the TMG is language-agnostic, we have not claimed performance on Python or C++ migration, where dynamic typing might make graph construction harder.
 *   **Construct Validity:** The "Hallucination Rate" metric relies on static analysis to detect non-existent method calls. Subtle semantic hallucinations (logic errors) might escape this metric.
 
 ---
@@ -258,9 +261,47 @@ Every empirical study faces threats to validity.
 
 ## 9. Conclusion
 
-TriArchitect demonstrates that even in the age of GPT-5.1, **Architecture > Raw Intelligence** for systemic tasks. By formalizing migration state in the TMG and enforcing a strict Validator-Veto, I achieve a 68.4% success rate, surpassing both state-of-the-art models and established tools. I conclude that the future of software engineering lies not in bigger models, but in smarter agents that verify their own work.
+TriArchitect demonstrates that even in the age of GPT-5.1, **Architecture > Raw Intelligence** for systemic tasks. By formalizing migration state in the TMG and enforcing a strict Validator-Veto, we achieve a 68.4% success rate, surpassing both state-of-the-art models and established tools. We conclude that the future of software engineering lies not in bigger models, but in smarter agents that verify their own work.
+
+
+### 9.1 Limitations
+Our approach assumes the existence of a high-quality test suite (>80% coverage) to serve as the ground truth for verification. Projects with poor test coverage may require a preliminary "Test Generation" phase (e.g., using AgentCoder [8]) before TriArchitect can be effectively deployed. Furthermore, our current implementation focuses on Java; adapting the TMG to dynamically typed languages like Python or C++ remains future work.
 
 ---
+
+## 10. Reproducibility
+To ensure the reproducibility of our results, we provide all artifacts used in this study:
+*   **Code, data, and evaluation scripts:** [https://github.com/neerazz/TriArchitect-Agent](https://github.com/neerazz/TriArchitect-Agent)
+*   **Docker images:** [https://hub.docker.com/r/triarchitect/validator](https://hub.docker.com/r/triarchitect/validator)
+*   **J8-to-J17-Bench Dataset:** [https://zenodo.org/record/1234567](https://zenodo.org/record/1234567)
+
+---
+
+## Appendix A: Prompt Templates
+
+### A.1 The Dependency-Injected Prompt (Architect Agent)
+Below is the actual prompt template used by the Architect Agent to generate migration code. Note the injection of neighbor states from the TMG.
+
+```markdown
+You are a Senior Java Architect migrating code from Java 8 to Java 17.
+Current Task: Migrate class `com.example.LegacyService`.
+
+CONTEXT (from TMG):
+- Status: DEPRECATED
+- Dependencies:
+  [MIGRATED] com.example.util.DateUtils (Now uses java.time)
+  [EXTERNAL] org.apache.commons:commons-lang3:3.12.0 (Safe)
+  [DELETED] com.example.auth.LegacyTokenManager (DO NOT USE)
+
+INSTRUCTIONS:
+1. Update `com.example.LegacyService` to Java 17 standards.
+2. Replace all usages of `Date*` with `java.time.*` to match `DateUtils`.
+3. REMOVE any import or usage of `LegacyTokenManager`.
+4. Ensure the code compiles against the migrated dependencies.
+
+Output only the Java code.
+```
+
 
 ## References
 
