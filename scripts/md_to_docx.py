@@ -127,6 +127,6 @@ if __name__ == '__main__':
     base_dir = 'resources/paper'
     parse_markdown_to_docx(
         'resources/paper/main.md',
-        'resources/paper/TriArchitect_Submission.docx',
+        'resources/paper/TriArchitect_Submission_Final.docx',
         base_dir
     )

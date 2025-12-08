@@ -3,6 +3,17 @@
 **Neeraj Kumar Singh Beshane**
 *Meta / Facebook, USA*
 
+
+---
+
+## Abstract
+
+As the global software infrastructure ages, the modernization of legacy systems—particularly the migration of monolithic Java 8 applications to contemporary Long-Term Support (LTS) versions like Java 17 or 21—has become a critical imperative for security, performance, and maintainability. While Large Language Models (LLMs) have demonstrated exceptional proficiency in isolated code generation tasks, their application to repository-scale migration is severely constrained by "Contextual Hallucinations"—a phenomenon where models generate syntactically correct but structurally invalid code due to a lack of global state awareness. Recent empirical studies (e.g., Collu-Bench [1]) indicate that determining the hallucination status of generated code remains an unsolved problem, with prediction accuracy often below 33%. In this work, we introduce **TriArchitect**, a novel shared-state multi-agent framework designed to bridge the gap between probabilistic reasoning and deterministic structural integrity. TriArchitect introduces three key innovations: (1) the **Typed Migration Graph (TMG)**, a formal directed acyclic graph that serves as a persistent semantic memory of the migration state; (2) a specialized role-based multi-agent architecture comprising an *Archeologist* (analysis), *Architect* (synthesis), and *Validator* (verification); and (3) a rigorous **Validator-Veto Protocol**, which enforces a "compilation-as-consensus" rule to reject hallucinated proposals before they corrupt the codebase. We evaluate TriArchitect on **J8-to-J17-Bench**, a comprehensive benchmark of 1,000 method-level and class-level migration tasks. Results demonstrate a **System Success Rate (SSR) of 68.4%**, statistically outperforming significant baselines including OpenRewrite (62.0%), SWE-Agent (63.5%), AutoCodeRover (64.8%), and raw GPT-5.1 (65.2%), while reducing token consumption by 40% through state-aware prompting.
+
+**Keywords:** Software Evolution, Large Language Models, Multi-Agent Systems, Automated Refactoring, Legacy Migration
+
+---
+
 ## 1. Introduction
 
 ### 1.1 The Legacy Code Crisis
@@ -24,9 +35,9 @@ We combine this with a **Validator-Veto Protocol**. In traditional multi-agent s
 ### 1.4 Contributions
 
 We make the following contributions to the field of automated software evolution:
-1.  **Formalization of the TMG:** I define the Typed Migration Graph as a mechanism for enforcing topological consistency in distributed code transformation.
-2.  **Role-Based Agent Architecture:** I describe the Archaeologist-Architect-Validator triad, a design pattern mimicking a high-functioning human engineering team.
-3.  **Experimental Validation:** I present results from **J8-to-J17-Bench**, evaluating 1,000 tasks and demonstrating that TriArchitect achieves a 68.4% System Success Rate (SSR), surpassing both deterministic tools (OpenRewrite) and unconstrained latent reasoning (GPT-5).
+1.  **Formalization of the TMG:** We define the Typed Migration Graph as a mechanism for enforcing topological consistency in distributed code transformation.
+2.  **Role-Based Agent Architecture:** We describe the Archaeologist-Architect-Validator triad, a design pattern mimicking a high-functioning human engineering team.
+3.  **Experimental Validation:** We present results from **J8-to-J17-Bench**, evaluating 1,000 tasks and demonstrating that TriArchitect achieves a 68.4% System Success Rate (SSR), surpassing both deterministic tools (OpenRewrite) and unconstrained latent reasoning (GPT-5).
 
 ---
 
@@ -273,7 +284,7 @@ Our approach assumes the existence of a high-quality test suite (>80% coverage) 
 To ensure the reproducibility of our results, we provide all artifacts used in this study:
 *   **Code, data, and evaluation scripts:** [https://github.com/neerazz/TriArchitect-Agent](https://github.com/neerazz/TriArchitect-Agent)
 *   **Docker images:** [https://hub.docker.com/r/triarchitect/validator](https://hub.docker.com/r/triarchitect/validator)
-*   **J8-to-J17-Bench Dataset:** [https://zenodo.org/record/1234567](https://zenodo.org/record/1234567)
+*   **J8-to-J17-Bench Dataset:** [https://zenodo.org](https://zenodo.org)
 
 ---
 
