@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "TriArchitect Team"}
+    {name = "Neeraj Kumar Singh Beshane"}
 ]
 keywords = ["migration", "llm", "multi-agent", "java", "code-analysis"]
 classifiers = [

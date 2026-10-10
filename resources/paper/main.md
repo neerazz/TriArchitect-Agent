@@ -1,5 +1,10 @@
 # TriArchitect: A Shared-State Multi-Agent Framework for Safe Java Code Migration
 
+**Author:** Neeraj Kumar Singh Beshane
+**ORCID:** https://orcid.org/0009-0002-2125-1805
+
+> Public working manuscript source; this is not the publisher's version of record. The published journal citation is in [citation.bib](citation.bib).
+
 **Targeting: ICSE 2026 Technical Track**
 
 ---

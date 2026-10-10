@@ -211,3 +211,14 @@ MIT
 ## Contributing
 
 See AGENTS.md for development guidelines.
+
+## Cite the published article
+
+Neeraj Kumar Singh Beshane. “TriArchitect: A Shared-State Multi-Agent Framework for Safe Java Code Migration.”
+*International Journal of Computer Information Systems and Industrial Management Applications*,
+18(18s), 739–751, 2026. [DOI: 10.70917/ijcisim-2026-4917](https://doi.org/10.70917/ijcisim-2026-4917).
+
+Use [CITATION.cff](CITATION.cff) or [BibTeX](resources/paper/citation.bib).
+The structured author is `author = {Beshane, Neeraj Kumar Singh}`
+(family: Beshane; given names: Neeraj Kumar Singh).
+Paper working sources are in [resources/paper/](resources/paper/); they are not the publisher's version of record.
